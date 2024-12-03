@@ -11,4 +11,4 @@ $(objects): %.o: %.cc
 
 .PHONY: clean
 clean:
-	rm *.o **/*.o vm
+	rm *.o **/*.o vm || true
