@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 #include "model.h"
 #include "cmdbarstate.h"
 #include "filestate.h"
@@ -16,7 +17,7 @@ class VMState : public Model {
   Macros macros;
   */
  public: 
-    VMState();
+    VMState(const std::string &filename);
     void run() override;
     CommandBarState* getCommandBarState();
     ~VMState() override;

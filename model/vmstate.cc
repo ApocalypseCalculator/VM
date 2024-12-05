@@ -8,12 +8,16 @@
 #include "vmfilestate.h"
 #include <ncurses.h>
 
-VMState::VMState() {
+VMState::VMState(const std::string& filename) {
     //clipboard = new Clipboard();
     //history = new EditHistory();
     //file = new FileState();
+    if(filename != "") {
+        file = std::make_unique<VMFileState>(filename);
+    } else {
+        file = std::make_unique<VMFileState>();
+    }
     cmdbar = std::make_unique<VMCommandBarState>();
-    file = std::make_unique<VMFileState>();
     //macros = new Macros();
     initscr();
     std::unique_ptr<View> cmdbarview = std::make_unique<CommandBarView>(cmdbar.get());
@@ -35,11 +39,6 @@ void VMState::run() {
 }
 
 VMState::~VMState() {
-    //delete clipboard;
-    //delete history;
-    //delete file;
-    //delete cmdbar;
-    //delete macros;
     endwin();
 }
 
