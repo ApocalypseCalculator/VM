@@ -2,10 +2,17 @@
 #include "../model/filestate.h"
 #include <ncurses.h>
 
+#define EMPTYROW 1
+
 FileView::FileView(FileState *file): file{file} {
-    int maxx = getmaxx(stdscr);
-    int maxy = getmaxy(stdscr);
-    win = newwin(maxy - 3, maxx, 0, 0);
+    width = getmaxx(stdscr);
+    height = getmaxy(stdscr) - 3;
+    win = newwin(height, width, 0, 0);
+    if(has_colors()) {
+        start_color();
+        init_pair(EMPTYROW, COLOR_MAGENTA, COLOR_BLACK);
+        coloured = true;
+    }
     refresh();
     displayView();
 }
@@ -15,8 +22,22 @@ void FileView::updateCursor(int row, int col) {};
 void FileView::displayView() {
     wclear(win);
     box(win, 0, 0);
-    // wmove(win, 1, 1);
-    // wprintw(win, cmdbar->getCommandBar().c_str());
-    // wmove(win, 1, cmdbar->getCursor().charidx + 1);
+    for(int i = 0; i < height-2; i++) { // -2 to leave space for border box
+        if(i < file->getLineCount()) {
+            int pos = 1;
+            for(auto c : file->getLine(i)) {
+                wmove(win, i + 1, pos);
+                waddch(win, c);
+                pos++;
+            }
+            // wprintw(win, file->getLine(i).c_str());
+        } else {
+            wmove(win, i + 1, 1);
+            if(coloured) wattron(win, COLOR_PAIR(EMPTYROW));
+            waddch(win, '~');
+            if(coloured) wattroff(win, COLOR_PAIR(EMPTYROW));
+        }
+    }
+    wmove(win, 1 + file->getCursor().lineidx, 1 + file->getCursor().charidx);
     wrefresh(win);
 };

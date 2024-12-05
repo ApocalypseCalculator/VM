@@ -6,6 +6,9 @@
 
 class FileView : public View {
     FileState *file;
+    int width;
+    int height;
+    bool coloured = false;
     public: 
     FileView(FileState *file);
   void update(const std::string& msg) override;

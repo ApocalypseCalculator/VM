@@ -17,9 +17,11 @@ class VMState : public Model {
   Macros macros;
   */
  public: 
+    bool fileOwnCursor = true; // does the file currently "own" the cursor
     VMState(const std::string &filename);
     void run() override;
     CommandBarState* getCommandBarState();
+    FileState* getFileState();
     ~VMState() override;
 };
 
