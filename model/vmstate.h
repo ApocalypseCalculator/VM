@@ -4,18 +4,21 @@
 #include <memory>
 #include <vector>
 #include "model.h"
+#include "cmdbarstate.h"
+#include "filestate.h"
 
 class VMState : public Model {
+  std::unique_ptr<CommandBarState> cmdbar;
+  std::unique_ptr<FileState> file;
   /*
   Clipboard clipboard;
   EditHistory history;
-  FileState file;
-  CommandBarState cmdbar;
   Macros macros;
   */
  public: 
     VMState();
     void run() override;
+    CommandBarState* getCommandBarState();
     ~VMState() override;
 };
 

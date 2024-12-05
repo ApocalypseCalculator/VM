@@ -1,4 +1,5 @@
 #include "model.h"
+#include "../controller/controller.h"
 
 Model::Model() {
     exitFlag = false;
@@ -18,4 +19,8 @@ void Model::terminate() {
 
 bool Model::exit() {
     return exitFlag;
+}
+
+Controller* Model::getController() {
+    return control.get();
 }

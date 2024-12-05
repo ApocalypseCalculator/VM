@@ -7,12 +7,11 @@
 #include "../action/action.h"
 
 class VMInputParser{
-    Mode mode;
     std::vector<std::unique_ptr<Action>> actions;
   // virtual Action action() = 0;
  public:
     VMInputParser();
-    Action* parseAction(std::vector<int> input);
+    Action* parseAction(std::vector<int> input, Mode mode);
   // Action getAction();
 };
 #endif

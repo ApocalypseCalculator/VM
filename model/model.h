@@ -20,6 +20,7 @@ class Model{
   virtual void run() = 0;
   virtual ~Model() = default;
   // void updateViews(int, int, State);
+  Controller* getController();
   void updateViews(const std::string& s);
   void displayViews();
   void terminate();

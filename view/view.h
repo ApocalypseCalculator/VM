@@ -5,9 +5,8 @@
 #include <ncurses.h>
 
 class View{
-  WINDOW *win;
-  protected: 
-  void initview(int h, int w, int y, int x);
+  protected:
+  WINDOW *win; 
  public:
   virtual ~View() = default;
   virtual void update(const std::string& msg) = 0;
