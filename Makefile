@@ -1,11 +1,10 @@
 CXX=g++-14
-CXXFLAGS=-std=c++20 -Wall -g -lncurses
-
-objects=action/action.o action/insert.o controller/controller.o controller/parser.o controller/curseskb.o view/view.o view/cmdbarview.o view/fileview.o model/model.o model/vmstate.o test.o
-
+CXXFLAGS=-std=c++20 -Wall -g -lncurses -MMD
+srcfiles := $(wildcard */*.cc) $(wildcard *.cc)
+objects=$(patsubst %.cc,%.o,$(srcfiles))
 vm: $(objects)
 	$(CXX) $(CXXFLAGS) -o vm $(objects)
-
 .PHONY: clean
 clean:
-	rm *.o **/*.o vm || true
+	rm *.o **/*.o *.d **/*.d vm || true
+-include $(objects:.o=.d)
