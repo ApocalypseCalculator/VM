@@ -74,32 +74,57 @@ void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
     } else if(input.at(0) == '0') {
         Cursor search = vmstate->getFileState()->getCursor();
         vmstate->getFileState()->setCursor(Cursor{search.lineidx, 0});
-    } else if(input.size() == 2) {
-        if(input.at(0) == 'f') {
+    } else if(input.at(0) == ';') {
+        char searchChar = vmstate->getCommandBarState()->getSearchChar();
+        if(searchChar != '\0') { // default search (no search)
+            bool searchFwd = vmstate->getCommandBarState()->getSearchForward();
+            // copy pasted and modified from `f` section below
             Cursor search = vmstate->getFileState()->getCursor();
             std::string line = vmstate->getFileState()->getLine(search.lineidx);
+            if(searchFwd) {
+                for(int i = search.charidx+1; i < line.size(); i++) {
+                    if(line.at(i) == searchChar) {
+                        vmstate->getFileState()->setCursor(Cursor{search.lineidx, i});
+                        break;
+                    }
+                }
+            } else {
+                for(int i = search.charidx-1; i >= 0; i--) {
+                    if(line.at(i) == searchChar) {
+                        vmstate->getFileState()->setCursor(Cursor{search.lineidx, i});
+                        break;
+                    }
+                }
+            }
+        }
+    } else if(input.size() == 2) {
+        Cursor search = vmstate->getFileState()->getCursor();
+        std::string line = vmstate->getFileState()->getLine(search.lineidx);
+        if(input.at(0) == 'f') {
             for(int i = search.charidx+1; i < line.size(); i++) {
                 if(line.at(i) == input.at(1)) {
                     vmstate->getFileState()->setCursor(Cursor{search.lineidx, i});
                     break;
                 }
             }
+            vmstate->getCommandBarState()->setSearch(input.at(1));
+            vmstate->getCommandBarState()->setSearchForward(true);
         } else if(input.at(0) == 'F') {
-            Cursor search = vmstate->getFileState()->getCursor();
-            std::string line = vmstate->getFileState()->getLine(search.lineidx);
             for(int i = search.charidx-1; i >= 0; i--) {
                 if(line.at(i) == input.at(1)) {
                     vmstate->getFileState()->setCursor(Cursor{search.lineidx, i});
                     break;
                 }
             }
+            vmstate->getCommandBarState()->setSearch(input.at(1));
+            vmstate->getCommandBarState()->setSearchForward(false);
         }
     }
     vmstate->getController()->flushBuffer();
 }
 
 // valid single char inputs
-static const int validInputs[] = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, 'h', 'j', 'k', 'l', 'w', '^', '$', '0'};
+static const int validInputs[] = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, 'h', 'j', 'k', 'l', 'w', '^', '$', '0', ';'};
 
 bool MoveCursor::matchAction(const std::vector<int> &input) {
     if(input.size() == 1) {

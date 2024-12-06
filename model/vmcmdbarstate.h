@@ -10,7 +10,7 @@ class VMCommandBarState : public CommandBarState {
     std::string content;
     bool searchForward = true;
     std::string searchStr;
-    char searchChar;
+    char searchChar = '\0';
     Cursor cursor;
     std::string error;
 
