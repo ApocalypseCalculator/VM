@@ -23,6 +23,8 @@ class CommandBarState {
     virtual std::string getSearchStr() = 0;
     virtual char getSearchChar() = 0;
     virtual bool getSearchForward() = 0;
+    virtual void setError(std::string error) = 0;
+    virtual std::string getError() = 0;
 };
 
 #endif

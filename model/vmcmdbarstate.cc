@@ -13,6 +13,7 @@ std::string VMCommandBarState::getCommandBar() {
 }
 
 void VMCommandBarState::setCommandBar(std::string content) {
+    setError("");
     this->content = content;
 }
 
@@ -49,9 +50,19 @@ bool VMCommandBarState::getSearchForward() {
 }
 
 void VMCommandBarState::appendCommandBar(std::string content) {
+    setError("");
     this->content += content;
 }
 
 void VMCommandBarState::appendCommandBar(char c) {
+    setError("");
     content += c;
+}
+
+void VMCommandBarState::setError(std::string error) {
+    this->error = error;
+}
+
+std::string VMCommandBarState::getError() {
+    return error;
 }

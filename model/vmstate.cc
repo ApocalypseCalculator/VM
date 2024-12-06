@@ -18,8 +18,9 @@ VMState::VMState(const std::string& filename) {
         file = std::make_unique<VMFileState>();
     }
     cmdbar = std::make_unique<VMCommandBarState>();
-    
+
     initscr();
+    if(has_colors()) start_color();
     std::unique_ptr<View> cmdbarview = std::make_unique<CommandBarView>(cmdbar.get());
     std::unique_ptr<View> fileview = std::make_unique<FileView>(file.get());
     addView(std::move(cmdbarview));

@@ -31,7 +31,7 @@ void Command::doAction(const std::vector<int> &input, VMState *vmstate) {
     else if(input.back() == '\n') {
         if(input == "q\n") {
             if(vmstate->getFileState()->hasChange()) {
-                vmstate->getCommandBarState()->setCommandBar("File has unsaved changes");
+                vmstate->getCommandBarState()->setError("File has unsaved changes");
             } else {
                 vmstate->terminate();
             }
@@ -42,9 +42,9 @@ void Command::doAction(const std::vector<int> &input, VMState *vmstate) {
         else if(input == "w\n" || input == "wq\n") {
             // just :w\n or :wq\n
             if(vmstate->getFileState()->isReadOnly()) {
-                vmstate->getCommandBarState()->setCommandBar("File is read-only");
+                vmstate->getCommandBarState()->setError("File is read-only");
             } else if (vmstate->getFileState()->getFilename() == "") {
-                vmstate->getCommandBarState()->setCommandBar("No filename specified");
+                vmstate->getCommandBarState()->setError("No filename specified");
             } else {
                 vmstate->getFileState()->save();
                 vmstate->getCommandBarState()->setCommandBar("File saved");

@@ -6,6 +6,7 @@
 
 class CommandBarView : public View {
   CommandBarState *cmdbar;
+  bool coloured = false;
     public: 
     CommandBarView(CommandBarState *cmdbar);
   void update(const std::string& msg) override;

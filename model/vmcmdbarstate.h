@@ -12,6 +12,7 @@ class VMCommandBarState : public CommandBarState {
     std::string searchStr;
     char searchChar;
     Cursor cursor;
+    std::string error;
 
  public: 
     VMCommandBarState();
@@ -27,6 +28,8 @@ class VMCommandBarState : public CommandBarState {
     bool getSearchForward() override;
     void appendCommandBar(std::string content) override;
     void appendCommandBar(char c) override;
+    void setError(std::string error) override;
+    std::string getError() override;
 };
 
 #endif
