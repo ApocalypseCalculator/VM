@@ -21,6 +21,7 @@ void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
         FileState *file = vmstate->getFileState();
         Cursor search = file->getCursor();
         bool foundws = false;
+        bool newlined = false;
         while(search.lineidx < file->getLineCount()) {
             std::string line = file->getLine(search.lineidx);
             char nextchar;
@@ -29,6 +30,9 @@ void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
                 search.charidx++;
                 nextchar = line.at(search.charidx);
             } else {
+                if(newlined) {
+                    break;
+                }
                 // newline
                 // last character of last line
                 if(search.lineidx == file->getLineCount()-1) {
@@ -38,6 +42,7 @@ void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
                 search.charidx = 0;
                 search.lineidx++;
                 foundws = true; // found a newline
+                newlined = true;
                 if(file->getLine(search.lineidx).size() > 0) {
                     nextchar = file->getLine(search.lineidx).at(0);
                 }
@@ -50,11 +55,23 @@ void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
             }
         }
         file->setCursor(search);
+    } else if(input.at(0) == '^') {
+        Cursor search = vmstate->getFileState()->getCursor();
+        std::string line = vmstate->getFileState()->getLine(search.lineidx);
+        int charidx = 0;
+        for(auto &c : line) {
+            if(c == ' ' || c == '\t') {
+                charidx++;
+            } else {
+                break;
+            }
+        }
+        vmstate->getFileState()->setCursor(Cursor{search.lineidx, charidx});
     }
     vmstate->getController()->flushBuffer();
 }
 
-static const int validInputs[] = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, 'h', 'j', 'k', 'l', 'w'};
+static const int validInputs[] = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, 'h', 'j', 'k', 'l', 'w', '^'};
 
 bool MoveCursor::matchAction(const std::vector<int> &input) {
     if(input.size() == 1) {

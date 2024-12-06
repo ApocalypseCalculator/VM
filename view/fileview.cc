@@ -50,7 +50,7 @@ void FileView::displayView() {
             if(coloured) wattroff(win, COLOR_PAIR(EMPTYROW));
         }
     }
-    dcursRow += file->getCursor().charidx / (width - 2);
+    dcursRow += file->getCursor().charidx / (width - 2); // account for 2 sides of border
     dcursCol += file->getCursor().charidx % (width - 2);
     wmove(win, dcursRow, dcursCol);
     wrefresh(win);
