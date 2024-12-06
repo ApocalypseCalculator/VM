@@ -74,6 +74,26 @@ void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
     } else if(input.at(0) == '0') {
         Cursor search = vmstate->getFileState()->getCursor();
         vmstate->getFileState()->setCursor(Cursor{search.lineidx, 0});
+    } else if(input.size() == 2) {
+        if(input.at(0) == 'f') {
+            Cursor search = vmstate->getFileState()->getCursor();
+            std::string line = vmstate->getFileState()->getLine(search.lineidx);
+            for(int i = search.charidx+1; i < line.size(); i++) {
+                if(line.at(i) == input.at(1)) {
+                    vmstate->getFileState()->setCursor(Cursor{search.lineidx, i});
+                    break;
+                }
+            }
+        } else if(input.at(0) == 'F') {
+            Cursor search = vmstate->getFileState()->getCursor();
+            std::string line = vmstate->getFileState()->getLine(search.lineidx);
+            for(int i = search.charidx-1; i >= 0; i--) {
+                if(line.at(i) == input.at(1)) {
+                    vmstate->getFileState()->setCursor(Cursor{search.lineidx, i});
+                    break;
+                }
+            }
+        }
     }
     vmstate->getController()->flushBuffer();
 }
@@ -88,6 +108,9 @@ bool MoveCursor::matchAction(const std::vector<int> &input) {
                 return true;
             }
         }
+    }
+    else if(input.size() == 2 && (input.at(0) == 'f' || input.at(0) == 'F')) {
+        return true;
     }
     return false;
 }
