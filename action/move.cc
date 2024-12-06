@@ -67,11 +67,19 @@ void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
             }
         }
         vmstate->getFileState()->setCursor(Cursor{search.lineidx, charidx});
+    } else if(input.at(0) == '$') {
+        Cursor search = vmstate->getFileState()->getCursor();
+        // static cast unsigned long (size_t) to int
+        vmstate->getFileState()->setCursor(Cursor{search.lineidx, static_cast<int>(vmstate->getFileState()->getLine(search.lineidx).size())});
+    } else if(input.at(0) == '0') {
+        Cursor search = vmstate->getFileState()->getCursor();
+        vmstate->getFileState()->setCursor(Cursor{search.lineidx, 0});
     }
     vmstate->getController()->flushBuffer();
 }
 
-static const int validInputs[] = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, 'h', 'j', 'k', 'l', 'w', '^'};
+// valid single char inputs
+static const int validInputs[] = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, 'h', 'j', 'k', 'l', 'w', '^', '$', '0'};
 
 bool MoveCursor::matchAction(const std::vector<int> &input) {
     if(input.size() == 1) {
