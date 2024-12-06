@@ -22,14 +22,26 @@ void FileView::updateCursor(int row, int col) {};
 void FileView::displayView() {
     wclear(win);
     box(win, 0, 0);
+    int lineidx = 0;
+    int dcursCol = 1;
+    int dcursRow = 1;
     for(int i = 0; i < height-2; i++) { // -2 to leave space for border box
-        if(i < file->getLineCount()) {
+        if(lineidx < file->getLineCount()) {
+            if(file->getCursor().lineidx == lineidx) {
+                dcursRow+=i;
+            }
             int pos = 1;
-            for(auto c : file->getLine(i)) {
+            for(auto c : file->getLine(lineidx)) {
+                if(pos == width - 1) {
+                    if(i == height - 3) break;
+                    pos = 1;
+                    i++;
+                }
                 wmove(win, i + 1, pos);
                 waddch(win, c);
                 pos++;
             }
+            lineidx++;
             // wprintw(win, file->getLine(i).c_str());
         } else {
             wmove(win, i + 1, 1);
@@ -38,6 +50,8 @@ void FileView::displayView() {
             if(coloured) wattroff(win, COLOR_PAIR(EMPTYROW));
         }
     }
-    wmove(win, 1 + file->getCursor().lineidx, 1 + file->getCursor().charidx);
+    dcursRow += file->getCursor().charidx / (width - 2);
+    dcursCol += file->getCursor().charidx % (width - 2);
+    wmove(win, dcursRow, dcursCol);
     wrefresh(win);
 };
