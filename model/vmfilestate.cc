@@ -75,6 +75,17 @@ int VMFileState::getLineCount() {
     return content.size();
 }
 
+int VMFileState::getLineCount(int width) {
+    int count = 0;
+    for(auto &line : content) {
+        count += line.size() / width;
+        if(line.size() % width != 0) {
+            count++;
+        }
+    }
+    return count;
+}
+
 std::string VMFileState::getLine(int line) {
     return content.at(line);
 }

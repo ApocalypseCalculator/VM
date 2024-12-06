@@ -13,6 +13,7 @@ class FileState {
     virtual void save(std::string fname) = 0;
     virtual bool isReadOnly() = 0;
     virtual int getLineCount() = 0;
+    virtual int getLineCount(int width) = 0;
     virtual std::string getLine(int line) = 0;
     virtual std::string getFilename() = 0;
     virtual bool hasChange() = 0;

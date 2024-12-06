@@ -19,15 +19,55 @@ FileView::FileView(FileState *file): file{file} {
 void FileView::update(const std::string& msg) {}
 void FileView::updateLine(int row, const std::string) {};
 void FileView::updateCursor(int row, int col) {};
+
+int FileView::getActualDisplayLine(int lineidx, int charidx) {
+    int lcount = 0;
+    for(int i = 0; i <= lineidx; i++) {
+        if(i == lineidx) {
+            lcount += charidx / (width - 2);
+            break;
+        }
+        int lineSize = file->getLine(i).size();
+        lcount += lineSize / (width - 2);
+        if(lineSize == 0) lcount++;
+        if(lineSize % (width - 2) != 0) {
+            lcount++;
+        }
+    }
+    return lcount;
+}
+
+void FileView::updateWindow() {
+    Cursor curposition = file->getCursor();
+
+    int curWinStart = getActualDisplayLine(curOffset, 0);
+    int curWinEnd = curWinStart + height - 2;
+    int curCursorLine = getActualDisplayLine(curposition.lineidx, curposition.charidx);
+
+    if(curCursorLine < curWinStart) {
+        curOffset = curposition.lineidx;
+    } else if(curCursorLine >= curWinEnd) {
+        curOffset++;
+    }
+}
+
 void FileView::displayView() {
     wclear(win);
     box(win, 0, 0);
-    int lineidx = 0;
+
+    updateWindow();
+
+    int lineidx = curOffset;
+    
+    Cursor curposition = file->getCursor();
+
+    // cursor position in display
     int dcursCol = 1;
     int dcursRow = 1;
+
     for(int i = 0; i < height-2; i++) { // -2 to leave space for border box
         if(lineidx < file->getLineCount()) {
-            if(file->getCursor().lineidx == lineidx) {
+            if(curposition.lineidx == lineidx) {
                 dcursRow+=i;
             }
             int pos = 1;
