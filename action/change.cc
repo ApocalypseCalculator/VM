@@ -64,7 +64,7 @@ void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate) {
         Cursor search = vmstate->getFileState()->getCursor();
         std::string line = vmstate->getFileState()->getLine(search.lineidx);
         vmstate->getFileState()->setCursor(Cursor{search.lineidx, static_cast<int>(line.size())});
-        vmstate->getFileState()->insert("\n");
+        vmstate->getFileState()->insertChar('\n');
         vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
         vmstate->getController()->setMode(Mode::INSERT);
     }
@@ -72,7 +72,7 @@ void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate) {
         // go to start first, insert \n, move cursor up
         Cursor search = vmstate->getFileState()->getCursor();
         vmstate->getFileState()->setCursor(Cursor{search.lineidx, 0});
-        vmstate->getFileState()->insert("\n");
+        vmstate->getFileState()->insertChar('\n');
         vmstate->getFileState()->setCursor(Cursor{search.lineidx, 0}); // this should now be the prev line
         vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
         vmstate->getController()->setMode(Mode::INSERT);

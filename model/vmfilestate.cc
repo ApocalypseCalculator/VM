@@ -61,10 +61,8 @@ void VMFileState::save() {
 }
 
 void VMFileState::save(std::string filename) {
-    if(filename != "") {
-        return;
-    }
     this->filename = filename;
+    this->readonly = false;
     save();
 }
 
@@ -126,6 +124,8 @@ void VMFileState::removeChar() {
 }
 
 void VMFileState::insert(const std::string& s) {
+    cursor.charidx = content.at(cursor.lineidx).size();
+    insertChar('\n');
     for(auto &c : s) {
         insertChar(c);
     }

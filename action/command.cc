@@ -2,6 +2,7 @@
 #include "../model/vmstate.h"
 #include <ncurses.h>
 #include <vector>
+#include <fstream>
 
 Command::Command() {
     mode = Mode::COMMAND;
@@ -78,8 +79,44 @@ void Command::doAction(const std::vector<int> &unfiltered, VMState *vmstate) {
         else if(input == "0\n") {
             vmstate->getFileState()->setCursor(Cursor{0, 0});
         }
+        else if(input.at(0) == 'w' && input.size() > 3 && input.at(1) == ' ') {
+            std::string filename{input.begin() + 2, input.end()-1};
+            vmstate->getFileState()->save(filename);
+            vmstate->getCommandBarState()->setCommandBar("File saved");
+        }
         else if(input.at(0) == 'r') {
+            if(input.size() == 2) { // then its :r\n
+                if (vmstate->getFileState()->getFilename() == "") {
+                    vmstate->getCommandBarState()->setError("No filename specified");
+                }
+                else {
+                    std::ifstream filetoread = std::ifstream{vmstate->getFileState()->getFilename()};
+                    if(filetoread.fail()) {
+                        vmstate->getCommandBarState()->setError("Error reading file");
+                    }
+                    else {
+                        std::string lineval;
+                        while(getline(filetoread, lineval)) {
+                            vmstate->getFileState()->insert(lineval);
+                        }
+                        filetoread.close();
+                    }
+                }
+            } else if(input.size() > 3 && input.at(1) == ' ') { // supplied filename as arg
+                std::string filename{input.begin() + 2, input.end()-1};
+                std::ifstream filetoread = std::ifstream{filename};
 
+                if(filetoread.fail()) {
+                    vmstate->getCommandBarState()->setError("Error reading file");
+                }
+                else {
+                    std::string lineval;
+                    while(getline(filetoread, lineval)) {
+                        vmstate->getFileState()->insert(lineval);
+                    }
+                    filetoread.close();
+                }
+            }
         }
         else {
             std::string inp{input.begin(), input.end()};
