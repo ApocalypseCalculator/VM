@@ -51,6 +51,26 @@ void Command::doAction(const std::vector<int> &input, VMState *vmstate) {
                 if(input == "wq\n") vmstate->terminate();
             }
         }
+        else if(input == "$\n") {
+            int linec = vmstate->getFileState()->getLineCount() - 1;
+            if(linec < 0) linec = 0;
+            vmstate->getFileState()->setCursor(Cursor{linec, 0});
+        }
+        else if(input == "0\n") {
+            vmstate->getFileState()->setCursor(Cursor{0, 0});
+        }
+        else {
+            std::string inp{input.begin(), input.end()};
+            inp.pop_back();
+            int converted = 0;
+            try {
+                converted = std::stoi(inp.c_str());
+            } catch(...) {}
+            if(converted > 0) {
+                vmstate->getFileState()->setCursor(Cursor{0, 0});
+                vmstate->getFileState()->moveCursor(0, converted-1, true);
+            }
+        }
         vmstate->getController()->flushBuffer();
         vmstate->getController()->setMode(Mode::NORMAL);
     }

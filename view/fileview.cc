@@ -47,7 +47,14 @@ void FileView::updateWindow() {
     if(curCursorLine < curWinStart) {
         curOffset = curposition.lineidx;
     } else if(curCursorLine >= curWinEnd) {
+        // need to find the first line that fits in the screen while the cursor 
+        // is still visible
         curOffset++;
+
+        // TODO: handle edge case where 1 line may span the entire screen
+        while(curCursorLine >= getActualDisplayLine(curOffset, 0) + height - 2) {
+            curOffset++;
+        }
     }
 }
 
