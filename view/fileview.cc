@@ -55,7 +55,78 @@ void FileView::displayView() {
     wclear(win);
     box(win, 0, 0);
 
-    updateWindow();
+    if(file->getForcedPageMove() != 0) {
+        // move curOffset
+        // then move cursor
+
+        // Cursor pos = file->getCursor();
+        int advance = file->getForcedPageMove() * (height-3)/2;
+        int offsetchange = 0;
+        // move down by 1 page
+        if(advance > 0) {
+            while(advance > 0) {
+                if(curOffset + offsetchange == file->getLineCount()) {
+                    offsetchange--; // don't go past end of file
+                    break;
+                }
+                int linesize = file->getLine(curOffset + offsetchange).size();
+                if(linesize == 0) {
+                    advance--;
+                } else {
+                    int lines = linesize / (width - 2);
+                    if(linesize % (width - 2) != 0) {
+                        lines++;
+                    }
+                    if(advance >= lines) {
+                        advance -= lines;
+                    } else {
+                        break;
+                    }
+                }
+                offsetchange++;
+            }
+            curOffset += offsetchange;
+            if(file->getForcedPageMove() == 1) {
+                file->moveCursor(0, offsetchange);
+            } else {
+                file->setCursor(Cursor{curOffset, 0});
+            }
+        }
+        else {
+            while(advance < 0) {
+                if(curOffset - offsetchange == 0) {
+                    // don't go past end of file
+                    break;
+                }
+                int linesize = file->getLine(curOffset - offsetchange).size();
+                if(linesize == 0) {
+                    advance++;
+                } else {
+                    int lines = linesize / (width - 2);
+                    if(linesize % (width - 2) != 0) {
+                        lines++;
+                    }
+                    if(advance < lines) {
+                        advance += lines;
+                    } else {
+                        break;
+                    }
+                }
+                offsetchange++;
+            }
+            curOffset -= offsetchange;
+            if(file->getForcedPageMove() == -1) {
+                file->moveCursor(0, -offsetchange);
+            } else {
+                file->setCursor(Cursor{curOffset, 0});
+            }
+        }
+
+        // reset forced offset back to 0
+        file->setForcedPageMove(0);
+    } else {
+        updateWindow();
+    }
 
     int lineidx = curOffset;
     

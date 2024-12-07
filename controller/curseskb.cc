@@ -4,7 +4,8 @@
 #include <ncurses.h>
 
 CursesKeyboard::CursesKeyboard() {
-    cbreak();
+    // cbreak();
+    raw();
     noecho();
     keypad(stdscr, true);
     mode = Mode::NORMAL;

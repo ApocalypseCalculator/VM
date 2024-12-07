@@ -26,6 +26,12 @@ class FileState {
     virtual void insertChar(char c) = 0;
     // remove char behind cursor
     virtual void removeChar() = 0;
+    /*get manually defined page movement, 
+    represented as half-pages (positive for down)
+    default 0 */
+    virtual int getForcedPageMove() = 0;
+    // set manually defined page movement
+    virtual void setForcedPageMove(int offset) = 0;
 };
 
 #endif

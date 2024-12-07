@@ -13,6 +13,7 @@ class VMFileState: public FileState {
     std::string filename;
     bool ghost = false;
     bool changed = false;
+    int forcedMove = -1;
 
     public: 
     VMFileState();
@@ -32,6 +33,8 @@ class VMFileState: public FileState {
     void moveCursor(int cols, int lines) override;
     void insertChar(char c) override;
     void removeChar() override;
+    int getForcedPageMove() override;
+    void setForcedPageMove(int offset) override;
 };
 
 #endif

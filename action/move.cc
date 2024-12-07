@@ -4,9 +4,32 @@
 #include <ncurses.h>
 #include "../model/cursor.h"
 
+#define ctrl(x) ((x) & 0x1f)
+
 MoveCursor::MoveCursor() {
     mode = Mode::NORMAL;
 }
+
+// valid single char inputs
+static const int validInputs[] = {
+    KEY_UP, 
+    KEY_DOWN, 
+    KEY_LEFT, 
+    KEY_RIGHT, 
+    'h', 
+    'j', 
+    'k', 
+    'l', 
+    'w', 
+    '^', 
+    '$', 
+    '0', 
+    ';', 
+    ctrl('b'), 
+    ctrl('f'),
+    ctrl('u'),
+    ctrl('d')
+};
 
 void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
     if(input.at(0) == KEY_UP || input.at(0) == 'k') {
@@ -119,12 +142,21 @@ void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
             vmstate->getCommandBarState()->setSearch(input.at(1));
             vmstate->getCommandBarState()->setSearchForward(false);
         }
+    } else if (input.at(0) == ctrl('b')) {
+        // move up 1 page
+        vmstate->getFileState()->setForcedPageMove(-2);
+    } else if (input.at(0) == ctrl('f')) {
+        // move down 1 page
+        vmstate->getFileState()->setForcedPageMove(2);
+    } else if (input.at(0) == ctrl('u')) {
+        // move up 1 page
+        vmstate->getFileState()->setForcedPageMove(-1);
+    } else if (input.at(0) == ctrl('d')) {
+        // move down 1/2 page
+        vmstate->getFileState()->setForcedPageMove(1);
     }
     vmstate->getController()->flushBuffer();
 }
-
-// valid single char inputs
-static const int validInputs[] = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, 'h', 'j', 'k', 'l', 'w', '^', '$', '0', ';'};
 
 bool MoveCursor::matchAction(const std::vector<int> &input) {
     if(input.size() == 1) {

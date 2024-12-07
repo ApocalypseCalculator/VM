@@ -150,3 +150,10 @@ void VMFileState::moveCursor(int cols, int lines) {
         cursor.charidx = content.at(cursor.lineidx).size();
     }
 }
+
+int VMFileState::getForcedPageMove() {
+    return forcedMove;
+}
+void VMFileState::setForcedPageMove(int offset) {
+    forcedMove = offset;
+}
