@@ -30,6 +30,7 @@ class VMCommandBarState : public CommandBarState {
     void appendCommandBar(char c) override;
     void setError(std::string error) override;
     std::string getError() override;
+    void removeChar() override;
 };
 
 #endif

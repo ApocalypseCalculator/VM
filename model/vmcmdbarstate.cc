@@ -66,3 +66,9 @@ void VMCommandBarState::setError(std::string error) {
 std::string VMCommandBarState::getError() {
     return error;
 }
+
+void VMCommandBarState::removeChar() {
+    if(content.size() > 0) {
+        content.pop_back();
+    }
+}

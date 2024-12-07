@@ -1,6 +1,7 @@
 #include "command.h"
 #include "../model/vmstate.h"
 #include <ncurses.h>
+#include <vector>
 
 Command::Command() {
     mode = Mode::COMMAND;
@@ -18,10 +19,28 @@ bool operator==(const std::vector<int> &input, std::string s) {
     return true;
 }
 
-void Command::doAction(const std::vector<int> &input, VMState *vmstate) {
-    if(input.empty()) return;
+void Command::doAction(const std::vector<int> &unfiltered, VMState *vmstate) {
+    std::vector<int> input = unfiltered;
+    int toremove = 0;
+    for(int i = input.size()-1; i >= 0; i--) {
+        if(input.at(i) == 127) { //backspace key
+            input.erase(input.begin() + i);
+            toremove++;
+        }
+        else if(toremove > 0) {
+            input.erase(input.begin() + i);
+            toremove--;
+        }
+    }
+
+    if(unfiltered.empty()) return;
     // vmstate->insert(input);
-    vmstate->getCommandBarState()->appendCommandBar(input.back());
+    if(unfiltered.back() == 127) {
+        vmstate->getCommandBarState()->removeChar();
+        return;
+    }
+    if(input.empty()) return;
+    vmstate->getCommandBarState()->appendCommandBar(unfiltered.back());
     // ESC key pressed twice consecutively, abort command
     if(input.size() >= 2 && input.at(input.size()-2) == 27 && input.back() == 27) {
         vmstate->getController()->flushBuffer();
@@ -58,6 +77,9 @@ void Command::doAction(const std::vector<int> &input, VMState *vmstate) {
         }
         else if(input == "0\n") {
             vmstate->getFileState()->setCursor(Cursor{0, 0});
+        }
+        else if(input.at(0) == 'r') {
+
         }
         else {
             std::string inp{input.begin(), input.end()};
