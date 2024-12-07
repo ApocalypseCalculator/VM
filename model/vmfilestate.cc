@@ -119,7 +119,7 @@ void VMFileState::removeChar() {
         cursor.lineidx--;
     }
     else {
-        content.at(cursor.lineidx).erase(cursor.charidx-1);
+        content.at(cursor.lineidx).erase(cursor.charidx-1, 1);
         cursor.charidx--;
     }
     changed = true;
@@ -132,7 +132,7 @@ void VMFileState::insert(const std::string& s) {
 }
 
 void VMFileState::removeLine(int line) {
-    content.erase(content.begin() + line);
+    content.at(line).clear();
     changed = true;
 }
 

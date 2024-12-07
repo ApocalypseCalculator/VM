@@ -16,7 +16,11 @@ static const int validInputs[] = {
     'I',
     'A',
     'o',
-    'O', 
+    'O',
+    's',
+    'S',
+    //'r',
+    //'R',
     ':'
 };
 
@@ -70,6 +74,21 @@ void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate) {
         vmstate->getFileState()->setCursor(Cursor{search.lineidx, 0});
         vmstate->getFileState()->insert("\n");
         vmstate->getFileState()->setCursor(Cursor{search.lineidx, 0}); // this should now be the prev line
+        vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
+        vmstate->getController()->setMode(Mode::INSERT);
+    }
+    else if(input.at(0) == 's') {
+        // removechar, then insert
+        vmstate->getFileState()->moveCursor(1, 0, false);
+        vmstate->getFileState()->removeChar();
+        vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
+        vmstate->getController()->setMode(Mode::INSERT);
+    }
+    else if(input.at(0) == 'S') {
+        // remove line, then insert
+        Cursor search = vmstate->getFileState()->getCursor();
+        vmstate->getFileState()->removeLine(search.lineidx);
+        vmstate->getFileState()->setCursor(Cursor{search.lineidx, 0});
         vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
         vmstate->getController()->setMode(Mode::INSERT);
     }
