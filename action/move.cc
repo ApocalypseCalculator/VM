@@ -21,6 +21,7 @@ static const int validInputs[] = {
     'k', 
     'l', 
     'w', 
+    'b', 
     '^', 
     '$', 
     '0', 
@@ -76,6 +77,58 @@ void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
                 // we reached the first character after whitespace
                 break;
             }
+        }
+        file->setCursor(search);
+    }  else if(input.at(0) == 'b') {
+        FileState *file = vmstate->getFileState();
+        Cursor search = file->getCursor();
+        bool foundws = false;
+        bool newlined = false;
+        while(search.lineidx >= 0) {
+            std::string line = file->getLine(search.lineidx);
+            char prevchar;
+            // finding next character within line
+            if(search.charidx > 0) {
+                search.charidx--;
+                prevchar = line.at(search.charidx);
+            } else {
+                if(newlined) {
+                    break;
+                }
+                // newline
+                // first character of first line
+                if(search.lineidx == 0) {
+                    search.charidx = 0; // go to first character
+                    break;
+                }
+                search.lineidx--;
+                search.charidx = file->getLine(search.lineidx).size()-1; // NOTE: this could set to -1
+                foundws = true; // found a newline
+                newlined = true;
+                if(file->getLine(search.lineidx).size() > 0) {
+                    prevchar = file->getLine(search.lineidx).back();
+                }
+            }
+            if(prevchar == ' ' || prevchar == '\t') {
+                foundws = true;
+            } else if(foundws) {
+                break;
+            }
+        }
+        // we reached the first character before first whitespace
+        // we just need to seek backwards until we find another 
+        // whitespace OR we reach the beginning of the line
+        if(search.charidx > 0) {
+            std::string line = file->getLine(search.lineidx);
+            while(search.charidx > 0) {
+                search.charidx--;
+                if(line.at(search.charidx) == ' ' || line.at(search.charidx) == '\t') {
+                    search.charidx++;
+                    break;
+                }
+            }
+        } else {
+            search.charidx = 0;
         }
         file->setCursor(search);
     } else if(input.at(0) == '^') {
