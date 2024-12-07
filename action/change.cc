@@ -19,8 +19,8 @@ static const int validInputs[] = {
     'O',
     's',
     'S',
-    //'r',
-    //'R',
+    'r',
+    'R',
     ':'
 };
 
@@ -91,6 +91,15 @@ void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate) {
         vmstate->getFileState()->setCursor(Cursor{search.lineidx, 0});
         vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
         vmstate->getController()->setMode(Mode::INSERT);
+    }
+    else if(input.at(0) == 'r') {
+        // r does not cause cmd bar changes
+        vmstate->getCommandBarState()->setCommandBar("");
+        vmstate->getController()->setMode(Mode::REPLACE);
+    }
+    else if(input.at(0) == 'R') {
+        vmstate->getCommandBarState()->setCommandBar("-- REPLACE --");
+        vmstate->getController()->setMode(Mode::REPLACE);
     }
     else if(input.at(0) == ':') {
         vmstate->getCommandBarState()->setCommandBar(":");

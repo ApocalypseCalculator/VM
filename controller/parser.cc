@@ -5,12 +5,14 @@
 #include "../action/command.h"
 #include "../action/move.h"
 #include "../action/insert.h"
+#include "../action/replace.h"
 
 VMInputParser::VMInputParser() {
     actions.push_back(std::make_unique<ChangeMode>());
     actions.push_back(std::make_unique<Command>());
     actions.push_back(std::make_unique<MoveCursor>());
     actions.push_back(std::make_unique<Insertion>());
+    actions.push_back(std::make_unique<Replace>());
 }
 
 Action* VMInputParser::parseAction(std::vector<int> input, Mode mode) {

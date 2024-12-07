@@ -1,12 +1,12 @@
-#ifndef ___INSERTION_ACTION___H__
-#define ___INSERTION_ACTION___H__
+#ifndef ___REPLACE_ACTION___H__
+#define ___REPLACE_ACTION___H__
 #include "action.h"
 
-class Insertion : public Action {
+class Replace : public Action {
     public:
-    Insertion();
+    Replace();
     void doAction(const std::vector<int> &input, VMState *vmstate) override;
     bool matchAction(const std::vector<int> &input) override;
-    ~Insertion() override;
+    ~Replace() override;
 };
 #endif
