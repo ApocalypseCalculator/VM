@@ -87,7 +87,7 @@ void FileView::displayView() {
             }
             curOffset += offsetchange;
             if(file->getForcedPageMove() == 1) {
-                file->moveCursor(0, offsetchange);
+                file->moveCursor(0, offsetchange, true);
             } else {
                 file->setCursor(Cursor{curOffset, 0});
             }
@@ -116,7 +116,7 @@ void FileView::displayView() {
             }
             curOffset -= offsetchange;
             if(file->getForcedPageMove() == -1) {
-                file->moveCursor(0, -offsetchange);
+                file->moveCursor(0, -offsetchange, true);
             } else {
                 file->setCursor(Cursor{curOffset, 0});
             }

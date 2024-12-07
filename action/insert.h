@@ -3,6 +3,7 @@
 #include "action.h"
 
 class Insertion : public Action {
+    char srcCmd = 'i';
     public:
     Insertion();
     void doAction(const std::vector<int> &input, VMState *vmstate) override;

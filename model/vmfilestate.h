@@ -30,7 +30,7 @@ class VMFileState: public FileState {
     void removeLine(int line) override;
     Cursor getCursor() override;
     void setCursor(Cursor newcursor) override;
-    void moveCursor(int cols, int lines) override;
+    void moveCursor(int cols, int lines, bool strict) override;
     void insertChar(char c) override;
     void removeChar() override;
     int getForcedPageMove() override;

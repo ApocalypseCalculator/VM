@@ -35,13 +35,13 @@ static const int validInputs[] = {
 
 void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
     if(input.at(0) == KEY_UP || input.at(0) == 'k') {
-        vmstate->getFileState()->moveCursor(0, -1);
+        vmstate->getFileState()->moveCursor(0, -1, true);
     } else if(input.at(0) == KEY_DOWN || input.at(0) == 'j') {
-        vmstate->getFileState()->moveCursor(0, 1);
+        vmstate->getFileState()->moveCursor(0, 1, true);
     } else if(input.at(0) == KEY_LEFT || input.at(0) == 'h') {
-        vmstate->getFileState()->moveCursor(-1, 0);
+        vmstate->getFileState()->moveCursor(-1, 0, true);
     } else if(input.at(0) == KEY_RIGHT || input.at(0) == 'l') {
-        vmstate->getFileState()->moveCursor(1, 0);
+        vmstate->getFileState()->moveCursor(1, 0, true);
     } else if(input.at(0) == 'w') {
         FileState *file = vmstate->getFileState();
         Cursor search = file->getCursor();

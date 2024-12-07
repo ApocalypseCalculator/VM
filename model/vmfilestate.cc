@@ -96,23 +96,32 @@ bool VMFileState::hasChange() {
 }
 
 void VMFileState::insertChar(char c) {
-    content.at(cursor.lineidx).insert(cursor.charidx, 1, c);
-    cursor.charidx++;
     if(c == '\n') {
         content.insert(content.begin() + cursor.lineidx+1, content.at(cursor.lineidx).substr(cursor.charidx));
         content.at(cursor.lineidx) = content.at(cursor.lineidx).substr(0, cursor.charidx);
         cursor.charidx = 0;
         cursor.lineidx++;
+    } else {
+        content.at(cursor.lineidx).insert(cursor.charidx, 1, c);
+        cursor.charidx++;
     }
     changed = true;
 }
 
 void VMFileState::removeChar() {
-    if(cursor.charidx == 0) {
-        return;
+    if(cursor.charidx == 0) { // merge with previous line
+        if(cursor.lineidx == 0) {
+            return;
+        }
+        cursor.charidx = content.at(cursor.lineidx-1).size();
+        content.at(cursor.lineidx-1) += content.at(cursor.lineidx);
+        content.erase(content.begin() + cursor.lineidx);
+        cursor.lineidx--;
     }
-    content.at(cursor.lineidx).erase(cursor.charidx-1);
-    cursor.charidx--;
+    else {
+        content.at(cursor.lineidx).erase(cursor.charidx-1);
+        cursor.charidx--;
+    }
     changed = true;
 }
 
@@ -131,11 +140,12 @@ Cursor VMFileState::getCursor() {
     return cursor;
 }
 
+// if cursor is set manually, do not check bounds
 void VMFileState::setCursor(Cursor newcursor) {
     cursor = newcursor;
 }
 
-void VMFileState::moveCursor(int cols, int lines) {
+void VMFileState::moveCursor(int cols, int lines, bool strict) {
     cursor.lineidx += lines;
     cursor.charidx += cols;
     if(cursor.lineidx < 0) {
@@ -147,8 +157,18 @@ void VMFileState::moveCursor(int cols, int lines) {
     if(cursor.charidx < 0) {
         cursor.charidx = 0;
     }
-    if(cursor.charidx > content.at(cursor.lineidx).size()) {
-        cursor.charidx = content.at(cursor.lineidx).size();
+    if(strict) {
+        if(cursor.charidx >= content.at(cursor.lineidx).size()) {
+            cursor.charidx = content.at(cursor.lineidx).size()-1;
+            if(cursor.charidx < 0) {
+                cursor.charidx = 0;
+            }
+        }
+    }
+    else {
+        if(cursor.charidx > content.at(cursor.lineidx).size()) {
+            cursor.charidx = content.at(cursor.lineidx).size();
+        }
     }
 }
 
