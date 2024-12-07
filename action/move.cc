@@ -30,7 +30,8 @@ static const int validInputs[] = {
     ctrl('f'),
     ctrl('u'),
     ctrl('d'), 
-    '%'
+    '%',
+    'J'
 };
 
 void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
@@ -212,6 +213,19 @@ void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
         // move to matching bracket
         Cursor search = vmstate->getFileState()->getCursor();
         vmstate->getFileState()->setCursor(findMatch(search, vmstate->getFileState()));
+    } else if (input.at(0) == 'J') {
+        // join lines
+        Cursor search = vmstate->getFileState()->getCursor();
+        if(search.lineidx < vmstate->getFileState()->getLineCount()-1) {
+            std::string line = vmstate->getFileState()->getLine(search.lineidx);
+            std::string nextline = vmstate->getFileState()->getLine(search.lineidx+1);
+            // remove leading whitespace
+            while(nextline.size() > 0 && (nextline.at(0) == ' ' || nextline.at(0) == '\t')) {
+                nextline = nextline.substr(1);
+            }
+            vmstate->getFileState()->replaceLine(search.lineidx, line + " " + nextline);
+            vmstate->getFileState()->removeLine(search.lineidx+1);
+        }
     }
     vmstate->getController()->flushBuffer();
 }

@@ -27,6 +27,7 @@ class VMFileState: public FileState {
     std::string getFilename() override;
     bool hasChange() override;
     void insert(const std::string& s) override;
+    void replaceLine(int line, std::string s) override;
     void removeLine(int line) override;
     Cursor getCursor() override;
     void setCursor(Cursor newcursor) override;

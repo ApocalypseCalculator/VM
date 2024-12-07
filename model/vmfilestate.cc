@@ -131,8 +131,13 @@ void VMFileState::insert(const std::string& s) {
     }
 }
 
+void VMFileState::replaceLine(int line, std::string s) {
+    removeLine(line);
+    content.insert(content.begin() + line, s);
+}
+
 void VMFileState::removeLine(int line) {
-    content.at(line).clear();
+    content.erase(content.begin() + line);
     changed = true;
 }
 
