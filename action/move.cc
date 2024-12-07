@@ -29,7 +29,8 @@ static const int validInputs[] = {
     ctrl('b'), 
     ctrl('f'),
     ctrl('u'),
-    ctrl('d')
+    ctrl('d'), 
+    '%'
 };
 
 void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
@@ -207,6 +208,10 @@ void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
     } else if (input.at(0) == ctrl('d')) {
         // move down 1/2 page
         vmstate->getFileState()->setForcedPageMove(1);
+    } else if (input.at(0) == '%') {
+        // move to matching bracket
+        Cursor search = vmstate->getFileState()->getCursor();
+        vmstate->getFileState()->setCursor(findMatch(search, vmstate->getFileState()));
     }
     vmstate->getController()->flushBuffer();
 }
@@ -226,3 +231,100 @@ bool MoveCursor::matchAction(const std::vector<int> &input) {
 }
 
 MoveCursor::~MoveCursor() = default;
+
+Cursor MoveCursor::findMatch(Cursor start, FileState *file) {
+    // only match on valid depth 0 (every nested is +1 or -1)
+    int depth = -1;
+    // current search cursor
+    Cursor search = start;
+    // direction of search (fwd or bwd)
+    bool fwd = true;
+    std::string curLine = file->getLine(search.lineidx);
+    if(curLine.size() <= search.charidx) {
+        return start;
+    }
+    char searchChar = curLine.at(search.charidx);
+    char opposite;
+    if(searchChar == '(') {
+        opposite = ')';
+    } else if(searchChar == '[') {
+        opposite = ']';
+    } else if(searchChar == '{') {
+        opposite = '}';
+    } else if(searchChar == ')') {
+        fwd = false;
+        opposite = '(';
+    } else if(searchChar == ']') {
+        fwd = false;
+        opposite = '[';
+    } else if(searchChar == '}') {
+        fwd = false;
+        opposite = '{';
+    } else {
+        // not a bracket
+        return start;
+    }
+
+    if(fwd) {
+        while(search.lineidx < file->getLineCount()) {
+            std::string line = file->getLine(search.lineidx);
+            if(line.size() == 0) {
+                search.charidx = 0;
+                search.lineidx++;
+                continue;
+            }
+            if(search.charidx < line.size()) {
+                if(line.at(search.charidx) == searchChar) {
+                    depth++;
+                } else if(line.at(search.charidx) == opposite) {
+                    if(depth == 0) {
+                        return search;
+                    } else {
+                        depth--;
+                    }
+                }
+            }
+            search.charidx++;
+            if(search.charidx == line.size()) {
+                search.charidx = 0;
+                search.lineidx++;
+            }
+        }
+    }
+    else {
+        while(search.lineidx >= 0) {
+            std::string line = file->getLine(search.lineidx);
+            if(line.size() == 0) {
+                search.charidx = file->getLine(search.lineidx).size()-1;
+                search.lineidx--;
+                if(search.charidx < 0) {
+                    search.charidx = 0;
+                }
+                continue;
+            }
+            if(search.charidx >= 0) {
+                if(line.at(search.charidx) == searchChar) {
+                    depth++;
+                } else if(line.at(search.charidx) == opposite) {
+                    if(depth == 0) {
+                        return search;
+                    } else {
+                        depth--;
+                    }
+                }
+            }
+            search.charidx--;
+            if(search.charidx < 0) {
+                search.lineidx--;
+                if(search.lineidx >= 0) {
+                    search.charidx = file->getLine(search.lineidx).size()-1;
+                    if(search.charidx < 0) {
+                        search.charidx = 0;
+                    }
+                }
+            }
+        }
+    }
+    // not found, return original (dont change cursor)
+    return start;
+}

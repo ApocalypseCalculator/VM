@@ -57,6 +57,7 @@ void VMFileState::save() {
         out << line << std::endl;
     }
     out.close();
+    changed = false;
 }
 
 void VMFileState::save(std::string filename) {
