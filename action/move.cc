@@ -34,6 +34,10 @@ static const int validInputs[] = {
     'J'
 };
 
+bool isWhiteSpace(char c) {
+    return c == ' ' || c == '\t';
+}
+
 void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
     if(input.at(0) == KEY_UP || input.at(0) == 'k') {
         vmstate->getFileState()->moveCursor(0, -1, true);
@@ -86,6 +90,8 @@ void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
         Cursor search = file->getCursor();
         bool foundws = false;
         bool newlined = false;
+        if(search.charidx == 0 || isWhiteSpace(file->getLine(search.lineidx).at(search.charidx-1))) {
+            // then we seek past the whitespace
         while(search.lineidx >= 0) {
             std::string line = file->getLine(search.lineidx);
             char prevchar;
@@ -131,6 +137,16 @@ void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
             }
         } else {
             search.charidx = 0;
+        }
+        }
+        else { // here, we are clearly not the start of a word, so we simply find the start
+            while(search.charidx > 0) {
+                search.charidx--;
+                if(isWhiteSpace(file->getLine(search.lineidx).at(search.charidx))) {
+                    search.charidx++;
+                    break;
+                }
+            }
         }
         file->setCursor(search);
     } else if(input.at(0) == '^') {
