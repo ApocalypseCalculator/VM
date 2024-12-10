@@ -6,6 +6,7 @@
 #include "../controller/curseskb.h"
 #include "vmcmdbarstate.h"
 #include "vmfilestate.h"
+#include "vmclipboard.h"
 #include <ncurses.h>
 
 VMState::VMState(const std::string& filename) {
@@ -18,6 +19,7 @@ VMState::VMState(const std::string& filename) {
         file = std::make_unique<VMFileState>();
     }
     cmdbar = std::make_unique<VMCommandBarState>();
+    clipboard = std::make_unique<VMClipboard>();
 
     initscr();
     if(has_colors()) start_color();
@@ -49,4 +51,8 @@ CommandBarState* VMState::getCommandBarState() {
 
 FileState* VMState::getFileState() {
     return file.get();
+}
+
+Clipboard* VMState::getClipboard() {
+    return clipboard.get();
 }

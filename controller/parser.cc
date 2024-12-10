@@ -7,6 +7,7 @@
 #include "../action/insert.h"
 #include "../action/replace.h"
 #include "../action/search.h"
+#include "../action/copy.h"
 
 VMInputParser::VMInputParser() {
     actions.push_back(std::make_unique<ChangeMode>());
@@ -15,6 +16,7 @@ VMInputParser::VMInputParser() {
     actions.push_back(std::make_unique<Insertion>());
     actions.push_back(std::make_unique<Replace>());
     actions.push_back(std::make_unique<Search>());
+    actions.push_back(std::make_unique<CopyPaste>());
 }
 
 Action* VMInputParser::parseAction(std::vector<int> input, Mode mode) {

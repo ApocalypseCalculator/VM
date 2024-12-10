@@ -26,7 +26,7 @@ class FileState {
     virtual void moveCursor(int cols, int lines, bool strict) = 0;
     // insert char at cursor
     virtual void insertChar(char c) = 0;
-    // remove char behind cursor
+    // remove char before cursor
     virtual void removeChar() = 0;
     /*get manually defined page movement, 
     represented as half-pages (positive for down)

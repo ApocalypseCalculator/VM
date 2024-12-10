@@ -7,10 +7,12 @@
 #include "model.h"
 #include "cmdbarstate.h"
 #include "filestate.h"
+#include "clipboard.h"
 
 class VMState : public Model {
   std::unique_ptr<CommandBarState> cmdbar;
   std::unique_ptr<FileState> file;
+  std::unique_ptr<Clipboard> clipboard;
   /*
   Clipboard clipboard;
   EditHistory history;
@@ -22,6 +24,7 @@ class VMState : public Model {
     void run() override;
     CommandBarState* getCommandBarState();
     FileState* getFileState();
+    Clipboard* getClipboard();
     ~VMState() override;
 };
 
