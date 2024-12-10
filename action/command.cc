@@ -36,30 +36,37 @@ void Command::doAction(const std::vector<int> &unfiltered, VMState *vmstate) {
 
     if(unfiltered.empty()) return;
     // vmstate->insert(input);
-    if(unfiltered.back() == 127) {
+    if(input.empty()) { // command has been aborted by backspace
+        vmstate->getController()->flushBuffer();
+        vmstate->getCommandBarState()->setCommandBar("");
+        vmstate->getController()->setMode(Mode::NORMAL);
+        return;
+    }
+    if(unfiltered.back() == 127) { // show backspace visually
         vmstate->getCommandBarState()->removeChar();
         return;
     }
-    if(input.empty()) return;
+
     vmstate->getCommandBarState()->appendCommandBar(unfiltered.back());
-    // ESC key pressed twice consecutively, abort command
-    if(input.size() >= 2 && input.at(input.size()-2) == 27 && input.back() == 27) {
+    // ESC key pressed, abort command
+    if(input.back() == 27) {
         vmstate->getController()->flushBuffer();
         vmstate->getCommandBarState()->setCommandBar("");
         vmstate->getController()->setMode(Mode::NORMAL);
     }
-    else if(input.back() == '\n') {
-        if(input == "q\n") {
+    else if(input.back() == '\n') { // command entered
+        if(input.at(0) == ':') { // : commands
+        if(input == ":q\n") {
             if(vmstate->getFileState()->hasChange()) {
                 vmstate->getCommandBarState()->setError("File has unsaved changes");
             } else {
                 vmstate->terminate();
             }
         }
-        else if(input == "q!\n") {
+        else if(input == ":q!\n") {
             vmstate->terminate();
         }
-        else if(input == "w\n" || input == "wq\n") {
+        else if(input == ":w\n" || input == ":wq\n") {
             // just :w\n or :wq\n
             if(vmstate->getFileState()->isReadOnly()) {
                 vmstate->getCommandBarState()->setError("File is read-only");
@@ -68,24 +75,24 @@ void Command::doAction(const std::vector<int> &unfiltered, VMState *vmstate) {
             } else {
                 vmstate->getFileState()->save();
                 vmstate->getCommandBarState()->setCommandBar("File saved");
-                if(input == "wq\n") vmstate->terminate();
+                if(input == ":wq\n") vmstate->terminate();
             }
         }
-        else if(input == "$\n") {
+        else if(input == ":$\n") {
             int linec = vmstate->getFileState()->getLineCount() - 1;
             if(linec < 0) linec = 0;
             vmstate->getFileState()->setCursor(Cursor{linec, 0});
         }
-        else if(input == "0\n") {
+        else if(input == ":0\n") {
             vmstate->getFileState()->setCursor(Cursor{0, 0});
         }
-        else if(input.at(0) == 'w' && input.size() > 3 && input.at(1) == ' ') {
+        else if(input.size() > 4 && input.at(1) == 'w' && input.at(2) == ' ') { // :w filename\n
             std::string filename{input.begin() + 2, input.end()-1};
             vmstate->getFileState()->save(filename);
             vmstate->getCommandBarState()->setCommandBar("File saved");
         }
-        else if(input.at(0) == 'r') {
-            if(input.size() == 2) { // then its :r\n
+        else if(input.size() > 2 && input.at(1) == 'r') {
+            if(input.size() == 3) { // then its :r\n
                 if (vmstate->getFileState()->getFilename() == "") {
                     vmstate->getCommandBarState()->setError("No filename specified");
                 }
@@ -102,8 +109,8 @@ void Command::doAction(const std::vector<int> &unfiltered, VMState *vmstate) {
                         filetoread.close();
                     }
                 }
-            } else if(input.size() > 3 && input.at(1) == ' ') { // supplied filename as arg
-                std::string filename{input.begin() + 2, input.end()-1};
+            } else if(input.size() > 4 && input.at(2) == ' ') { // supplied filename as arg
+                std::string filename{input.begin() + 3, input.end()-1};
                 std::ifstream filetoread = std::ifstream{filename};
 
                 if(filetoread.fail()) {
@@ -120,7 +127,7 @@ void Command::doAction(const std::vector<int> &unfiltered, VMState *vmstate) {
         }
         else {
             std::string inp{input.begin(), input.end()};
-            inp.pop_back();
+            inp = inp.substr(1, inp.size() - 2);
             int converted = 0;
             try {
                 converted = std::stoi(inp.c_str());
@@ -128,6 +135,29 @@ void Command::doAction(const std::vector<int> &unfiltered, VMState *vmstate) {
             if(converted > 0) {
                 vmstate->getFileState()->setCursor(Cursor{0, 0});
                 vmstate->getFileState()->moveCursor(0, converted-1, true);
+            }
+        }
+        }
+        else { // / or ?
+            if(input.at(0) == '/') {
+                vmstate->getCommandBarState()->setSearchSForward(true);
+            } else if(input.at(0) == '?') {
+                vmstate->getCommandBarState()->setSearchSForward(false);
+            }
+            std::string search{input.begin() + 1, input.end()-1};
+            if(search.size() == 0) {
+                // get last search
+                search = vmstate->getCommandBarState()->getSearchStr();
+                if(search == "") {
+                    vmstate->getCommandBarState()->setError("No previous search");
+                }
+            } else {
+                vmstate->getCommandBarState()->setSearch(search);
+            }
+
+            if(search != "") {
+                // call search action (in same direction as defined)
+                vmstate->getController()->setReplay("n");
             }
         }
         vmstate->getController()->flushBuffer();

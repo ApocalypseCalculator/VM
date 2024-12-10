@@ -6,6 +6,7 @@
 #include "../action/move.h"
 #include "../action/insert.h"
 #include "../action/replace.h"
+#include "../action/search.h"
 
 VMInputParser::VMInputParser() {
     actions.push_back(std::make_unique<ChangeMode>());
@@ -13,6 +14,7 @@ VMInputParser::VMInputParser() {
     actions.push_back(std::make_unique<MoveCursor>());
     actions.push_back(std::make_unique<Insertion>());
     actions.push_back(std::make_unique<Replace>());
+    actions.push_back(std::make_unique<Search>());
 }
 
 Action* VMInputParser::parseAction(std::vector<int> input, Mode mode) {

@@ -17,12 +17,18 @@ class CommandBarState {
     virtual void setCursor(Cursor cursor) = 0;
     virtual Cursor getCursor() = 0;
     virtual ~CommandBarState() = default;
+    // set current search forward status for char search
     virtual void setSearchForward(bool searchForward) = 0;
+    // set current search forward status for string search
+    virtual void setSearchSForward(bool searchForward) = 0;
     virtual void setSearch(std::string searchS) = 0;
     virtual void setSearch(char searchC) = 0;
-    virtual std::string getSearchStr() = 0;
+    virtual const std::string& getSearchStr() = 0;
     virtual char getSearchChar() = 0;
+    // get current search forward status for char search
     virtual bool getSearchForward() = 0;
+    // get current search forward status for string search
+    virtual bool getSearchSForward() = 0;
     virtual void setError(std::string error) = 0;
     virtual std::string getError() = 0;
     virtual void removeChar() = 0;

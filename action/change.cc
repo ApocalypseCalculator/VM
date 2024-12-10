@@ -21,7 +21,9 @@ static const int validInputs[] = {
     'S',
     'r',
     'R',
-    ':'
+    ':',
+    '/',
+    '?'
 };
 
 void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate) {
@@ -104,7 +106,12 @@ void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate) {
     else if(input.at(0) == ':') {
         vmstate->getCommandBarState()->setCommandBar(":");
         vmstate->getController()->setMode(Mode::COMMAND);
-        vmstate->getController()->flushBuffer();
+        return; // NOTE: do not flush buffer here, we need to know : to determine command
+    } else if(input.at(0) == '/' || input.at(0) == '?') {
+        vmstate->getCommandBarState()->setCommandBar("");
+        vmstate->getCommandBarState()->appendCommandBar(input.at(0));
+        vmstate->getController()->setMode(Mode::COMMAND);
+        return; // NOTE: do not flush buffer here, we need to know / or ? to determine search direction
     }
     vmstate->getController()->flushBuffer();
 }

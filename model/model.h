@@ -21,8 +21,8 @@ class Model{
   virtual ~Model() = default;
   // void updateViews(int, int, State);
   Controller* getController();
-  void updateViews(const std::string& s);
-  void displayViews();
+  //void updateViews(const std::string& s);
+  // void displayViews();
   void terminate();
   bool exit();
 };

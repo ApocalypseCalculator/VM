@@ -1,4 +1,5 @@
 #include <vector>
+#include <ranges>
 #include "curseskb.h"
 #include "../action/action.h"
 #include <ncurses.h>
@@ -12,7 +13,14 @@ CursesKeyboard::CursesKeyboard() {
 }
 
 Action* CursesKeyboard::getAction() {
-    int ch = getch();
+    int ch;
+    if(replay.empty()) {
+        ch = getch();
+    }
+    else {
+        ch = replay.top();
+        replay.pop();
+    }
     buffer.push_back(ch);
     if(ch == 27) { // double escape key press
         if(buffer.size() >= 2 && buffer.at(buffer.size()-2) == 27) {
@@ -31,4 +39,11 @@ Mode CursesKeyboard::getMode() {
 }
 void CursesKeyboard::setMode(Mode mode) {
     this->mode = mode;
+}
+
+void CursesKeyboard::setReplay(std::string replay) {
+    std::ranges::reverse_view reversed {replay};
+    for(char c : reversed) {
+        this->replay.push(c);
+    }
 }

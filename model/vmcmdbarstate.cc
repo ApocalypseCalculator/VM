@@ -29,6 +29,10 @@ void VMCommandBarState::setSearchForward(bool searchForward) {
     this->searchForward = searchForward;
 }
 
+void VMCommandBarState::setSearchSForward(bool searchForward) {
+    searchSForward = searchForward;
+}
+
 void VMCommandBarState::setSearch(std::string searchS) {
     searchStr = searchS;
 }
@@ -37,7 +41,7 @@ void VMCommandBarState::setSearch(char searchC) {
     searchChar = searchC;
 }
 
-std::string VMCommandBarState::getSearchStr() {
+const std::string& VMCommandBarState::getSearchStr() {
     return searchStr;
 }
 
@@ -47,6 +51,10 @@ char VMCommandBarState::getSearchChar() {
 
 bool VMCommandBarState::getSearchForward() {
     return searchForward;
+}
+
+bool VMCommandBarState::getSearchSForward() {
+    return searchSForward;
 }
 
 void VMCommandBarState::appendCommandBar(std::string content) {
