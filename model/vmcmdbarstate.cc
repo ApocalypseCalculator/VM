@@ -80,3 +80,13 @@ void VMCommandBarState::removeChar() {
         content.pop_back();
     }
 }
+
+void VMCommandBarState::setPersistMessage(std::string message) {
+    setError("");
+    content = ""; // reset content
+    persistMsg = message;
+}
+
+std::string VMCommandBarState::getPersistMessage() {
+    return persistMsg;
+}

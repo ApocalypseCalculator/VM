@@ -9,6 +9,7 @@
 #include "../action/search.h"
 #include "../action/copy.h"
 #include "../action/normal.h"
+#include "../action/record.h"
 
 VMInputParser::VMInputParser() {
     actions.push_back(std::make_unique<ChangeMode>());
@@ -19,6 +20,7 @@ VMInputParser::VMInputParser() {
     actions.push_back(std::make_unique<Search>());
     actions.push_back(std::make_unique<CopyPaste>());
     actions.push_back(std::make_unique<Normal>());
+    actions.push_back(std::make_unique<RecordReplay>());
 }
 
 Action* VMInputParser::parseAction(std::vector<int> input, Mode mode) {

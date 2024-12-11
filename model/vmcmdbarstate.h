@@ -14,6 +14,7 @@ class VMCommandBarState : public CommandBarState {
     char searchChar = '\0';
     Cursor cursor;
     std::string error;
+    std::string persistMsg = "";
 
  public: 
     VMCommandBarState();
@@ -34,6 +35,8 @@ class VMCommandBarState : public CommandBarState {
     void setError(std::string error) override;
     std::string getError() override;
     void removeChar() override;
+    void setPersistMessage(std::string message) override;
+    std::string getPersistMessage() override;
 };
 
 #endif

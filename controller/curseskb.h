@@ -4,18 +4,20 @@
 #include "controller.h"
 #include "parser.h"
 #include "../action/action.h"
+#include "../model/macros.h"
 
 class CursesKeyboard : public Controller {
-  // virtual Action action() = 0;
+  Macros* macro;
   Mode mode;
   VMInputParser parser;
 
  public:
-    CursesKeyboard();
+    CursesKeyboard(Macros* macro);
     Action* getAction() override;
     ~CursesKeyboard() override;
     Mode getMode() override;
     void setMode(Mode mode) override;
     void setReplay(std::string replay) override;
+    void setReplay(std::vector<int> replay) override;
 };
 #endif

@@ -24,7 +24,7 @@ void CommandBarView::displayView() {
     box(win, 0, 0);
     wmove(win, 1, 1);
     if(cmdbar->getError().size() == 0) {
-        wprintw(win, cmdbar->getCommandBar().c_str());
+        wprintw(win, (cmdbar->getCommandBar() + cmdbar->getPersistMessage()).c_str());
     } else {
         if(coloured) wattron(win, COLOR_PAIR(ERRORTEXT));
         wprintw(win, cmdbar->getError().c_str());

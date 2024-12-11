@@ -7,6 +7,7 @@
 #include "vmcmdbarstate.h"
 #include "vmfilestate.h"
 #include "vmclipboard.h"
+#include "vmmacros.h"
 #include <ncurses.h>
 
 VMState::VMState(const std::string& filename) {
@@ -20,6 +21,7 @@ VMState::VMState(const std::string& filename) {
     }
     cmdbar = std::make_unique<VMCommandBarState>();
     clipboard = std::make_unique<VMClipboard>();
+    macros = std::make_unique<VMMacros>();
 
     initscr();
     if(has_colors()) {
@@ -30,7 +32,7 @@ VMState::VMState(const std::string& filename) {
     std::unique_ptr<View> fileview = std::make_unique<FileView>(file.get());
     addView(std::move(cmdbarview));
     addView(std::move(fileview));
-    std::unique_ptr<Controller> control = std::make_unique<CursesKeyboard>();
+    std::unique_ptr<Controller> control = std::make_unique<CursesKeyboard>(macros.get());
     setController(std::move(control));
 }
 
@@ -58,4 +60,8 @@ FileState* VMState::getFileState() {
 
 Clipboard* VMState::getClipboard() {
     return clipboard.get();
+}
+
+Macros* VMState::getMacros() {
+    return macros.get();
 }

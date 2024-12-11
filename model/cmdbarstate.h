@@ -14,6 +14,8 @@ class CommandBarState {
     virtual void appendCommandBar(std::string content) = 0;
     // append char to command bar
     virtual void appendCommandBar(char c) = 0;
+    virtual void setPersistMessage(std::string message) = 0;
+    virtual std::string getPersistMessage() = 0;
     virtual void setCursor(Cursor cursor) = 0;
     virtual Cursor getCursor() = 0;
     virtual ~CommandBarState() = default;
