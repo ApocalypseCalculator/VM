@@ -24,7 +24,7 @@ void Insertion::doAction(const std::vector<int> &input, VMState *vmstate) {
             // move cursor back by 1
             vmstate->getFileState()->moveCursor(-1, 0, true);
         }
-        else if(givenCh == 127) { // backspace key
+        else if(givenCh == 127 || givenCh == KEY_BACKSPACE || givenCh == KEY_DC) { // backspace key
             vmstate->getFileState()->removeChar();
         }
         else {

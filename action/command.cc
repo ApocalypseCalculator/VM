@@ -24,7 +24,7 @@ void Command::doAction(const std::vector<int> &unfiltered, VMState *vmstate) {
     std::vector<int> input = unfiltered;
     int toremove = 0;
     for(int i = input.size()-1; i >= 0; i--) {
-        if(input.at(i) == 127) { //backspace key
+        if(input.at(i) == 127 || input.at(i) == KEY_BACKSPACE || input.at(i) == KEY_DC) { //backspace key
             input.erase(input.begin() + i);
             toremove++;
         }
@@ -42,7 +42,7 @@ void Command::doAction(const std::vector<int> &unfiltered, VMState *vmstate) {
         vmstate->getController()->setMode(Mode::NORMAL);
         return;
     }
-    if(unfiltered.back() == 127) { // show backspace visually
+    if(unfiltered.back() == 127 || unfiltered.back() == KEY_BACKSPACE || unfiltered.back() == KEY_DC) { // show backspace visually
         vmstate->getCommandBarState()->removeChar();
         return;
     }

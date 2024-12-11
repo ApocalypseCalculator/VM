@@ -29,7 +29,7 @@ void Normal::doAction(const std::vector<int> &input, VMState *vmstate) {
             // formula taken from vim help
             int pct = ((curpos.lineidx+2) * 100 - 99)/lcount;
             if(pct > 100) pct = 100;
-            if(pct < 100) pct = 0;
+            if(pct < 0) pct = 0;
             pctmsg = " --" + std::to_string(pct) + "%%--";
         }
 
