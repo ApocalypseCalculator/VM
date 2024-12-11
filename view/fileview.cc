@@ -9,7 +9,6 @@ FileView::FileView(FileState *file): file{file} {
     height = getmaxy(stdscr) - 3;
     win = newwin(height, width, 0, 0);
     if(has_colors()) {
-        start_color();
         init_pair(EMPTYROW, COLOR_MAGENTA, COLOR_BLACK);
         coloured = true;
     }
