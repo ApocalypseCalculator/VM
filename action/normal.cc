@@ -28,6 +28,8 @@ void Normal::doAction(const std::vector<int> &input, VMState *vmstate) {
             Cursor curpos = vmstate->getFileState()->getCursor();
             // formula taken from vim help
             int pct = ((curpos.lineidx+2) * 100 - 99)/lcount;
+            if(pct > 100) pct = 100;
+            if(pct < 100) pct = 0;
             pctmsg = " --" + std::to_string(pct) + "%%--";
         }
 
