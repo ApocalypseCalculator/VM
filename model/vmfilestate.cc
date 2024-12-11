@@ -163,7 +163,7 @@ void VMFileState::moveCursor(int cols, int lines, bool strict) {
     if(cursor.lineidx >= content.size()) {
         cursor.lineidx = content.size() - 1;
     }
-    if(cursor.charidx < 0) {
+    if(cursor.charidx < 0 || content.at(cursor.lineidx).size() == 0) {
         cursor.charidx = 0;
     }
     if(strict) {
