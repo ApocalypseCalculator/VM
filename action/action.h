@@ -12,7 +12,7 @@ class Action {
     Mode mode;
     virtual void doAction(const std::vector<int> &input, VMState *vmstate) = 0;
     virtual bool matchAction(const std::vector<int> &input) = 0;
-    virtual ~Action();
+    virtual ~Action() = default;
 };
 
 #endif
