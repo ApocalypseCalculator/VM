@@ -23,6 +23,9 @@ void Replace::doAction(const std::vector<int> &input, VMState *vmstate) {
             vmstate->getCommandBarState()->setCommandBar("");
             vmstate->getController()->setMode(Mode::NORMAL);
             vmstate->getHistory()->createChange(vmstate);
+            if(vmstate->getController()->getModeMultiplier() > 1) {
+                vmstate->getController()->setReplay(std::string(vmstate->getController()->getModeMultiplier()-1, '.'));
+            }
         }
         else {
             Cursor curcursor = vmstate->getFileState()->getCursor();
@@ -36,6 +39,7 @@ void Replace::doAction(const std::vector<int> &input, VMState *vmstate) {
     // this means that 'r' was pressed, and not 'R', so we return
     if(vmstate->getCommandBarState()->getCommandBar().size() == 0) {
         vmstate->getController()->setMode(Mode::NORMAL);
+        vmstate->getHistory()->createChange(vmstate);
     }
     vmstate->getController()->flushBuffer();
 }

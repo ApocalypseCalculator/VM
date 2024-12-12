@@ -4,9 +4,10 @@
 
 Insertion::Insertion() {
     mode = Mode::INSERT;
+    selfdefmultiply = true;
 }
 
-void Insertion::doAction(const std::vector<int> &input, VMState *vmstate) {
+void Insertion::doAction(const std::vector<int> &input, VMState *vmstate, int multiplier) {
     if(input.size() == 1) {
         int givenCh = input.at(0);
         // disable cursor navigation in insert mode
@@ -26,6 +27,9 @@ void Insertion::doAction(const std::vector<int> &input, VMState *vmstate) {
             // move cursor back by 1
             vmstate->getFileState()->moveCursor(-1, 0, true);
             vmstate->getHistory()->createChange(vmstate);
+            if(vmstate->getController()->getModeMultiplier() > 1) {
+                vmstate->getController()->setReplay(std::string(vmstate->getController()->getModeMultiplier()-1, '.'));
+            }
         }
         else if(givenCh == 127 || givenCh == KEY_BACKSPACE || givenCh == KEY_DC) { // backspace key
             vmstate->getFileState()->removeChar();

@@ -5,6 +5,7 @@ RecordReplay::RecordReplay() {
     mode = Mode::NORMAL;
 }
 
+// note q is not repeatable, but @ is
 void RecordReplay::doAction(const std::vector<int> &input, VMState *vmstate) {
     if(input.at(0) == 'q' && input.size() == 1) {
         if(vmstate->getMacros()->isRecording() != '\0') {

@@ -21,7 +21,7 @@ class VMFileState: public FileState {
     void save() override;
     void save(std::string filename) override;
     bool isReadOnly() override;
-    const bool isChanged() override;
+    void setChanged(bool val) override;
     int getLineCount() override;
     int getLineCount(int width) override;
     std::string getLine(int line) override;

@@ -7,6 +7,8 @@
 struct LineChange {
     std::string newline;
     std::string oldline;
+    bool newdeleted = false;
+    bool olddeleted = false;
     int lineidx;
 };
 

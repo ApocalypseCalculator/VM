@@ -34,7 +34,7 @@ void Normal::doAction(const std::vector<int> &input, VMState *vmstate) {
         }
 
         std::string changed = " ";
-        if(vmstate->getFileState()->isChanged()) {
+        if(vmstate->getFileState()->hasChange()) {
             changed = " [Modified] ";
         }
 

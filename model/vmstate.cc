@@ -38,22 +38,21 @@ VMState::VMState(const std::string& filename) {
 
 void VMState::run() {
     Action* res = control->getAction();
+    std::vector<int> bufcpy = control->getBuffer();
     if(res != nullptr) {
         if(control->getMultiplier() == 0) {
             if(res->isSelfDefMultiply()) {
-                res->doAction(control->getBuffer(), this, 1);
+                res->doAction(bufcpy, this, 1);
             }
             else {
-                res->doAction(control->getBuffer(), this);
+                res->doAction(bufcpy, this);
             }
         }
         else {
             if(res->isSelfDefMultiply()) {
-                res->doAction(control->getBuffer(), this, control->getMultiplier());
+                res->doAction(bufcpy, this, control->getMultiplier());
             }
             else {
-                // we create copies because flushBuffer() resets these values
-                std::vector<int> bufcpy = control->getBuffer();
                 int multiplier = control->getMultiplier();
                 for(int i = 0; i < multiplier; i++) {
                     res->doAction(bufcpy, this);

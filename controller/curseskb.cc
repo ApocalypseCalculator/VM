@@ -56,8 +56,8 @@ Mode CursesKeyboard::getMode() {
 }
 void CursesKeyboard::setMode(Mode mode) {
     if((this->mode == Mode::NORMAL || this->mode == Mode::COMMAND) && (mode == Mode::INSERT || mode == Mode::REPLACE)) {
-
         textentrybuffer.clear();
+        modeMultiplier = std::max(1, multiplier);
     }
     this->mode = mode;
 }
@@ -85,8 +85,8 @@ int CursesKeyboard::getMultiplier() {
     return multiplier;
 }
 
-void CursesKeyboard::setMultiplier(int multiplier) {
-    this->multiplier = multiplier;
+int CursesKeyboard::getModeMultiplier() {
+    return modeMultiplier;
 }
 
 const std::vector<int> CursesKeyboard::getModeBuffer(Mode mode) {

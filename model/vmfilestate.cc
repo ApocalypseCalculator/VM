@@ -42,8 +42,9 @@ std::string VMFileState::getFilename() {
     return filename;
 }
 
-const bool VMFileState::isChanged() {
-    return changed;
+void VMFileState::setChanged(bool val) {
+    changed = val;
+    return;
 }
 
 void VMFileState::save() {

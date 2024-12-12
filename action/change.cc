@@ -5,6 +5,8 @@
 
 ChangeMode::ChangeMode() {
     mode = Mode::NORMAL;
+    copypaste = std::make_unique<CopyPaste>();
+    selfdefmultiply = true;
 }
 
 // for changing mode to Insert or Command (colon commands)
@@ -26,7 +28,7 @@ static const int validInputs[] = {
     '?'
 };
 
-void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate) {
+void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate, int multiplier) {
     // vmstate->insert(input);
     if(input.at(0) == 'a') {
         vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
@@ -86,21 +88,12 @@ void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate) {
         vmstate->getHistory()->setRecentEditCmd(input);
     }
     else if(input.at(0) == 's') {
-        // removechar, then insert
-        vmstate->getFileState()->moveCursor(1, 0, false);
-        vmstate->getFileState()->removeChar();
-        vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
-        vmstate->getController()->setMode(Mode::INSERT);
-        vmstate->getHistory()->setRecentEditCmd(input);
+        // alias for cl
+        copypaste->doAction(std::vector<int>{'c', 'l'}, vmstate, multiplier);
     }
     else if(input.at(0) == 'S') {
-        // remove line, then insert
-        Cursor search = vmstate->getFileState()->getCursor();
-        vmstate->getFileState()->removeLine(search.lineidx);
-        vmstate->getFileState()->setCursor(Cursor{search.lineidx, 0});
-        vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
-        vmstate->getController()->setMode(Mode::INSERT);
-        vmstate->getHistory()->setRecentEditCmd(input);
+        // alias for cc
+        copypaste->doAction(std::vector<int>{'c', 'c'}, vmstate, multiplier);
     }
     else if(input.at(0) == 'r') {
         // r does not cause cmd bar changes

@@ -10,10 +10,13 @@ VMEditHistory::VMEditHistory(FileState* fstate) {
 }
 
 void VMEditHistory::undo(VMState* vmstate) {
+    if(changes.empty()) {
+        return;
+    }
     Change& last = changes.top();
     for(int i = last.changes.size()-1; i >= 0; i--) {
         LineChange& linechange = last.changes[i];
-        if(linechange.newline == "\0") {
+        if(linechange.newdeleted) {
             vmstate->getFileState()->insertLine(linechange.lineidx, linechange.oldline);
             if(linechange.lineidx > cachecopy.size()) {
                 for(int i = 0; i < linechange.lineidx - cachecopy.size(); i++) {
@@ -22,7 +25,7 @@ void VMEditHistory::undo(VMState* vmstate) {
             }
             cachecopy.insert(cachecopy.begin() + linechange.lineidx, linechange.oldline);
         }
-        else if(linechange.oldline == "\0") {
+        else if(linechange.olddeleted) {
             vmstate->getFileState()->removeLine(linechange.lineidx);
             cachecopy.erase(cachecopy.begin() + linechange.lineidx);
         }
@@ -33,6 +36,9 @@ void VMEditHistory::undo(VMState* vmstate) {
         vmstate->getFileState()->setCursor(Cursor(linechange.lineidx, 0));
     }
     changes.pop();
+    if(changes.empty()) {
+        vmstate->getFileState()->setChanged(false);
+    }
 }
 
 void VMEditHistory::addChange(Change change) {
@@ -69,7 +75,8 @@ void VMEditHistory::createChange(VMState* fstate) {
         for(int i = cachecopy.size(); i < fstate->getFileState()->getLineCount(); i++) {
             LineChange linechange;
             linechange.lineidx = i;
-            linechange.oldline = "\0"; // special case for line that doesnt exist
+            linechange.oldline = ""; // special case for line that doesnt exist
+            linechange.olddeleted = true;
             linechange.newline = fstate->getFileState()->getLine(i);
             // update cache
             cachecopy.push_back(linechange.newline);
@@ -92,7 +99,8 @@ void VMEditHistory::createChange(VMState* fstate) {
             LineChange linechange;
             linechange.lineidx = i;
             linechange.oldline = cachecopy[i];
-            linechange.newline = "\0"; // special case for line that doesnt exist
+            linechange.newline = ""; // special case for line that doesnt exist
+            linechange.newdeleted = true;
             // update cache
             cachecopy[i] = linechange.newline;
             change.changes.push_back(linechange);

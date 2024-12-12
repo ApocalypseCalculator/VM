@@ -26,7 +26,8 @@ class Controller {
   virtual void setReplay(std::string replay) = 0;
   virtual void setReplay(std::vector<int> replay) = 0;
   virtual int getMultiplier() = 0;
-  virtual void setMultiplier(int multiplier) = 0;
+  // multiplier for insert and replace mode
+  virtual int getModeMultiplier() = 0;
   virtual ~Controller();
 };
 #endif
