@@ -19,9 +19,6 @@ class FileView : public View {
 
     public: 
     FileView(FileState *file);
-  void update(const std::string& msg) override;
-  void updateLine(int row, const std::string) override;
-  void updateCursor(int row, int col) override;
   void displayView() override;
 };
 

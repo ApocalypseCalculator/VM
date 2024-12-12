@@ -15,9 +15,6 @@ FileView::FileView(FileState *file): file{file} {
     refresh();
     displayView();
 }
-void FileView::update(const std::string& msg) {}
-void FileView::updateLine(int row, const std::string) {};
-void FileView::updateCursor(int row, int col) {};
 
 int FileView::getActualDisplayLine(int lineidx, int charidx) {
     int lcount = 0;

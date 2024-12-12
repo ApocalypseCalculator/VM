@@ -9,9 +9,6 @@ class CommandBarView : public View {
   bool coloured = false;
     public: 
     CommandBarView(CommandBarState *cmdbar);
-  void update(const std::string& msg) override;
-  void updateLine(int row, const std::string) override;
-  void updateCursor(int row, int col) override;
   void displayView() override;
 };
 

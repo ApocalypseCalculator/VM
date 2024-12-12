@@ -22,7 +22,7 @@ class VMState : public Model {
   std::unique_ptr<EditHistory> history;
 
  public: 
-    bool fileOwnCursor = true; // does the file currently "own" the cursor
+    // bool fileOwnCursor = true; // does the file currently "own" the cursor
     VMState(const std::string &filename);
     void run() override;
     CommandBarState* getCommandBarState();

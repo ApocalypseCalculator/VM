@@ -16,9 +16,6 @@ CommandBarView::CommandBarView(CommandBarState *cmdbar) : cmdbar{cmdbar} {
     refresh();
     displayView();
 }
-void CommandBarView::update(const std::string& msg) {}
-void CommandBarView::updateLine(int row, const std::string) {};
-void CommandBarView::updateCursor(int row, int col) {};
 void CommandBarView::displayView() {
     wclear(win);
     box(win, 0, 0);
