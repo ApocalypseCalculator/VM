@@ -3,6 +3,7 @@
 #include "curseskb.h"
 #include "../action/action.h"
 #include <ncurses.h>
+#include <ctype.h>
 
 CursesKeyboard::CursesKeyboard(Macros* macro) : macro{macro} {
     // cbreak();
@@ -21,7 +22,19 @@ Action* CursesKeyboard::getAction() {
         ch = replay.top();
         replay.pop();
     }
-    buffer.push_back(ch);
+    
+    if(isdigit(ch) && mode == Mode::NORMAL && buffer.empty()) {
+        multiplier = multiplier * 10 + (ch - '0');
+    }
+    else {
+        buffer.push_back(ch);
+    }
+
+    if((mode == Mode::INSERT || mode == Mode::REPLACE)) {
+        textentrybuffer.push_back(ch);
+    }
+
+    
     if(macro->isRecording() != '\0') {
         // macro needs to remember to delete trailing 'q' key
         macro->append(macro->isRecording(), ch);
@@ -42,6 +55,10 @@ Mode CursesKeyboard::getMode() {
     return mode;
 }
 void CursesKeyboard::setMode(Mode mode) {
+    if((this->mode == Mode::NORMAL || this->mode == Mode::COMMAND) && (mode == Mode::INSERT || mode == Mode::REPLACE)) {
+
+        textentrybuffer.clear();
+    }
     this->mode = mode;
 }
 
@@ -57,4 +74,24 @@ void CursesKeyboard::setReplay(std::vector<int> replay) {
     for(int c : reversed) {
         this->replay.push(c);
     }
+}
+
+void CursesKeyboard::flushBuffer() {
+    buffer.clear();
+    multiplier = 0;
+}
+
+int CursesKeyboard::getMultiplier() {
+    return multiplier;
+}
+
+void CursesKeyboard::setMultiplier(int multiplier) {
+    this->multiplier = multiplier;
+}
+
+const std::vector<int> CursesKeyboard::getModeBuffer(Mode mode) {
+    if(mode == Mode::INSERT || mode == Mode::REPLACE) {
+        return textentrybuffer;
+    }
+    return std::vector<int>();
 }

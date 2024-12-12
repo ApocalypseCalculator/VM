@@ -154,6 +154,12 @@ void CopyPaste::doAction(const std::vector<int> &input, VMState *vmstate) {
         }
         vmstate->getController()->setMode(Mode::INSERT);
         vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
+        vmstate->getHistory()->setRecentEditCmd(input);
+    }
+
+    // if its not a yank motion, then change has been applied somewhere
+    if(input.at(0) != 'y') {
+        vmstate->getHistory()->createChange(vmstate);
     }
 
     vmstate->getController()->flushBuffer();

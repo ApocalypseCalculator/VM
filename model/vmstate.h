@@ -9,17 +9,18 @@
 #include "filestate.h"
 #include "clipboard.h"
 #include "macros.h"
+#include "edithistory.h"
 
 class Macros;
+class EditHistory;
 
 class VMState : public Model {
   std::unique_ptr<CommandBarState> cmdbar;
   std::unique_ptr<FileState> file;
   std::unique_ptr<Clipboard> clipboard;
   std::unique_ptr<Macros> macros;
-  /*
-  EditHistory history;
-  */
+  std::unique_ptr<EditHistory> history;
+
  public: 
     bool fileOwnCursor = true; // does the file currently "own" the cursor
     VMState(const std::string &filename);
@@ -28,6 +29,7 @@ class VMState : public Model {
     FileState* getFileState();
     Clipboard* getClipboard();
     Macros* getMacros();
+    EditHistory* getHistory();
     ~VMState() override;
 };
 

@@ -8,7 +8,8 @@ Replace::Replace() {
 void Replace::doAction(const std::vector<int> &input, VMState *vmstate) {
     if(input.size() == 1) {
         int givenCh = input.at(0);
-        if(givenCh == KEY_UP) {
+        // disable cursor navigation in replace mode
+        /*if(givenCh == KEY_UP) {
             vmstate->getFileState()->moveCursor(0, -1, false);
         } else if(givenCh == KEY_DOWN) {
             vmstate->getFileState()->moveCursor(0, 1, false);
@@ -17,9 +18,11 @@ void Replace::doAction(const std::vector<int> &input, VMState *vmstate) {
         } else if(givenCh == KEY_RIGHT) {
             vmstate->getFileState()->moveCursor(1, 0, false);
         }
-        else if(givenCh == 27) { // escape key
+        else */
+        if(givenCh == 27) { // escape key
             vmstate->getCommandBarState()->setCommandBar("");
             vmstate->getController()->setMode(Mode::NORMAL);
+            vmstate->getHistory()->createChange(vmstate);
         }
         else {
             Cursor curcursor = vmstate->getFileState()->getCursor();

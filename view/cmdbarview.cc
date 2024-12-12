@@ -30,6 +30,16 @@ void CommandBarView::displayView() {
         wprintw(win, cmdbar->getError().c_str());
         if(coloured) wattroff(win, COLOR_PAIR(ERRORTEXT));
     }
+    std::string cursorstr;
+    if(cmdbar->getCursor().charidx >= 0) {
+        cursorstr = std::to_string(cmdbar->getCursor().lineidx+1) + "," + std::to_string(cmdbar->getCursor().charidx+1);
+    }
+    else {
+        cursorstr = std::to_string(cmdbar->getCursor().lineidx+1) + ", 0-1";
+    }
+    wmove(win, 1, getmaxx(stdscr) - cursorstr.size() - 1);
+    wprintw(win, cursorstr.c_str());
+
     wmove(win, 1, cmdbar->getCursor().charidx + 1);
     wrefresh(win);
 }

@@ -87,9 +87,15 @@ void Command::doAction(const std::vector<int> &unfiltered, VMState *vmstate) {
             vmstate->getFileState()->setCursor(Cursor{0, 0});
         }
         else if(input.size() > 4 && input.at(1) == 'w' && input.at(2) == ' ') { // :w filename\n
-            std::string filename{input.begin() + 2, input.end()-1};
+            std::string filename{input.begin() + 3, input.end()-1};
             vmstate->getFileState()->save(filename);
             vmstate->getCommandBarState()->setCommandBar("File saved");
+        }
+        else if(input.size() > 5 && input.at(1) == 'w' && input.at(2) == 'q' && input.at(3) == ' ') { // :w filename\n
+            std::string filename{input.begin() + 4, input.end()-1};
+            vmstate->getFileState()->save(filename);
+            vmstate->getCommandBarState()->setCommandBar("File saved");
+            vmstate->terminate();
         }
         else if(input.size() > 2 && input.at(1) == 'r') {
             if(input.size() == 3) { // then its :r\n

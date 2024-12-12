@@ -21,6 +21,7 @@ class FileState {
     virtual void insert(const std::string& s) = 0;
     // replace line at line index with new string
     virtual void replaceLine(int line, std::string s) = 0;
+    virtual void insertLine(int line, std::string s) = 0;
     virtual void removeLine(int line) = 0;
     virtual Cursor getCursor() = 0;
     virtual void setCursor(Cursor newcursor) = 0;

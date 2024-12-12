@@ -30,8 +30,7 @@ static const int validInputs[] = {
     ctrl('f'),
     ctrl('u'),
     ctrl('d'), 
-    '%',
-    'J'
+    '%'
 };
 
 bool isWhiteSpace(char c) {
@@ -164,7 +163,7 @@ void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
     } else if(input.at(0) == '$') {
         Cursor search = vmstate->getFileState()->getCursor();
         // static cast unsigned long (size_t) to int
-        vmstate->getFileState()->setCursor(Cursor{search.lineidx, static_cast<int>(vmstate->getFileState()->getLine(search.lineidx).size())});
+        vmstate->getFileState()->moveCursor(vmstate->getFileState()->getLine(search.lineidx).size(), 0, true);
     } else if(input.at(0) == '0') {
         Cursor search = vmstate->getFileState()->getCursor();
         vmstate->getFileState()->setCursor(Cursor{search.lineidx, 0});
@@ -229,19 +228,6 @@ void MoveCursor::doAction(const std::vector<int> &input, VMState *vmstate) {
         // move to matching bracket
         Cursor search = vmstate->getFileState()->getCursor();
         vmstate->getFileState()->setCursor(findMatch(search, vmstate->getFileState()));
-    } else if (input.at(0) == 'J') {
-        // join lines
-        Cursor search = vmstate->getFileState()->getCursor();
-        if(search.lineidx < vmstate->getFileState()->getLineCount()-1) {
-            std::string line = vmstate->getFileState()->getLine(search.lineidx);
-            std::string nextline = vmstate->getFileState()->getLine(search.lineidx+1);
-            // remove leading whitespace
-            while(nextline.size() > 0 && (nextline.at(0) == ' ' || nextline.at(0) == '\t')) {
-                nextline = nextline.substr(1);
-            }
-            vmstate->getFileState()->replaceLine(search.lineidx, line + " " + nextline);
-            vmstate->getFileState()->removeLine(search.lineidx+1);
-        }
     }
     vmstate->getController()->flushBuffer();
 }

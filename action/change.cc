@@ -32,10 +32,12 @@ void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate) {
         vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
         vmstate->getFileState()->moveCursor(1, 0, false);
         vmstate->getController()->setMode(Mode::INSERT);
+        vmstate->getHistory()->setRecentEditCmd(input);
     }
     else if(input.at(0) == 'i') {
         vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
         vmstate->getController()->setMode(Mode::INSERT);
+        vmstate->getHistory()->setRecentEditCmd(input);
     }
     else if(input.at(0) == 'I') {
         // copied from move.cc's ^ command (seek first nonwhitespace)
@@ -52,6 +54,7 @@ void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate) {
         vmstate->getFileState()->setCursor(Cursor{search.lineidx, charidx});
         vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
         vmstate->getController()->setMode(Mode::INSERT);
+        vmstate->getHistory()->setRecentEditCmd(input);
     }
     else if(input.at(0) == 'A') {
         // go to end first
@@ -60,6 +63,7 @@ void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate) {
         vmstate->getFileState()->setCursor(Cursor{search.lineidx, static_cast<int>(line.size())});
         vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
         vmstate->getController()->setMode(Mode::INSERT);
+        vmstate->getHistory()->setRecentEditCmd(input);
     }
     else if(input.at(0) == 'o') {
         // go to end first, then insert \n (cursor moves automatically)
@@ -69,6 +73,7 @@ void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate) {
         vmstate->getFileState()->insertChar('\n');
         vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
         vmstate->getController()->setMode(Mode::INSERT);
+        vmstate->getHistory()->setRecentEditCmd(input);
     }
     else if(input.at(0) == 'O') {
         // go to start first, insert \n, move cursor up
@@ -78,6 +83,7 @@ void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate) {
         vmstate->getFileState()->setCursor(Cursor{search.lineidx, 0}); // this should now be the prev line
         vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
         vmstate->getController()->setMode(Mode::INSERT);
+        vmstate->getHistory()->setRecentEditCmd(input);
     }
     else if(input.at(0) == 's') {
         // removechar, then insert
@@ -85,6 +91,7 @@ void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate) {
         vmstate->getFileState()->removeChar();
         vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
         vmstate->getController()->setMode(Mode::INSERT);
+        vmstate->getHistory()->setRecentEditCmd(input);
     }
     else if(input.at(0) == 'S') {
         // remove line, then insert
@@ -93,15 +100,18 @@ void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate) {
         vmstate->getFileState()->setCursor(Cursor{search.lineidx, 0});
         vmstate->getCommandBarState()->setCommandBar("-- INSERT --");
         vmstate->getController()->setMode(Mode::INSERT);
+        vmstate->getHistory()->setRecentEditCmd(input);
     }
     else if(input.at(0) == 'r') {
         // r does not cause cmd bar changes
         vmstate->getCommandBarState()->setCommandBar("");
         vmstate->getController()->setMode(Mode::REPLACE);
+        vmstate->getHistory()->setRecentEditCmd(input);
     }
     else if(input.at(0) == 'R') {
         vmstate->getCommandBarState()->setCommandBar("-- REPLACE --");
         vmstate->getController()->setMode(Mode::REPLACE);
+        vmstate->getHistory()->setRecentEditCmd(input);
     }
     else if(input.at(0) == ':') {
         vmstate->getCommandBarState()->setCommandBar(":");

@@ -8,12 +8,10 @@
 #include "vmfilestate.h"
 #include "vmclipboard.h"
 #include "vmmacros.h"
+#include "vmedithistory.h"
 #include <ncurses.h>
 
 VMState::VMState(const std::string& filename) {
-    //clipboard = new Clipboard();
-    //history = new EditHistory();
-    //file = new FileState();
     if(filename != "") {
         file = std::make_unique<VMFileState>(filename);
     } else {
@@ -22,8 +20,10 @@ VMState::VMState(const std::string& filename) {
     cmdbar = std::make_unique<VMCommandBarState>();
     clipboard = std::make_unique<VMClipboard>();
     macros = std::make_unique<VMMacros>();
+    history = std::make_unique<VMEditHistory>(file.get());
 
     initscr();
+    set_escdelay(0);
     if(has_colors()) {
         start_color();
         use_default_colors();
@@ -39,7 +39,31 @@ VMState::VMState(const std::string& filename) {
 void VMState::run() {
     Action* res = control->getAction();
     if(res != nullptr) {
-        res->doAction(control->getBuffer(), this);
+        if(control->getMultiplier() == 0) {
+            if(res->isSelfDefMultiply()) {
+                res->doAction(control->getBuffer(), this, 1);
+            }
+            else {
+                res->doAction(control->getBuffer(), this);
+            }
+        }
+        else {
+            if(res->isSelfDefMultiply()) {
+                res->doAction(control->getBuffer(), this, control->getMultiplier());
+            }
+            else {
+                // we create copies because flushBuffer() resets these values
+                std::vector<int> bufcpy = control->getBuffer();
+                int multiplier = control->getMultiplier();
+                for(int i = 0; i < multiplier; i++) {
+                    res->doAction(bufcpy, this);
+                }
+            }
+        }
+    }
+    cmdbar->setCursor(file->getCursor());
+    if(file->getLine(file->getCursor().lineidx).size() == 0) {
+        cmdbar->setCursor(Cursor{file->getCursor().lineidx, -1});
     }
     for(auto& view : views) {
         view->displayView();
@@ -64,4 +88,8 @@ Clipboard* VMState::getClipboard() {
 
 Macros* VMState::getMacros() {
     return macros.get();
+}
+
+EditHistory* VMState::getHistory() {
+    return history.get();
 }

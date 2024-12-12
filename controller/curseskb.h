@@ -10,6 +10,7 @@ class CursesKeyboard : public Controller {
   Macros* macro;
   Mode mode;
   VMInputParser parser;
+  std::vector<int> textentrybuffer{};
 
  public:
     CursesKeyboard(Macros* macro);
@@ -19,5 +20,9 @@ class CursesKeyboard : public Controller {
     void setMode(Mode mode) override;
     void setReplay(std::string replay) override;
     void setReplay(std::vector<int> replay) override;
+    void flushBuffer() override;
+    int getMultiplier() override;
+    void setMultiplier(int multiplier) override;
+    const std::vector<int> getModeBuffer(Mode mode) override;
 };
 #endif

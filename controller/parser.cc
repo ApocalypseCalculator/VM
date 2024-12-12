@@ -10,6 +10,7 @@
 #include "../action/copy.h"
 #include "../action/normal.h"
 #include "../action/record.h"
+#include "../action/undo.h"
 
 VMInputParser::VMInputParser() {
     actions.push_back(std::make_unique<ChangeMode>());
@@ -21,11 +22,12 @@ VMInputParser::VMInputParser() {
     actions.push_back(std::make_unique<CopyPaste>());
     actions.push_back(std::make_unique<Normal>());
     actions.push_back(std::make_unique<RecordReplay>());
+    actions.push_back(std::make_unique<UndoRedo>());
 }
 
 Action* VMInputParser::parseAction(std::vector<int> input, Mode mode) {
     for(auto &action : actions) {
-        if(action->mode == mode && action->matchAction(input)) {
+        if(action->getMode() == mode && action->matchAction(input)) {
             return action.get();
         }
     }

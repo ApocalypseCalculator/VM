@@ -8,11 +8,18 @@ class VMState;
 enum Mode { NORMAL, COMMAND, INSERT, REPLACE };
 
 class Action {
-    public: 
+    protected:
+    bool selfdefmultiply = false;
+    bool redoable = false;
     Mode mode;
-    virtual void doAction(const std::vector<int> &input, VMState *vmstate) = 0;
+    public: 
+    virtual void doAction(const std::vector<int> &input, VMState *vmstate) {};
+    virtual void doAction(const std::vector<int> &input, VMState *vmstate, int multiplier) {};
     virtual bool matchAction(const std::vector<int> &input) = 0;
     virtual ~Action() = default;
+    const bool isSelfDefMultiply() const { return selfdefmultiply; }
+    const bool isRedoable() const { return redoable; }
+    const Mode getMode() const { return mode; }
 };
 
 #endif
