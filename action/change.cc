@@ -114,6 +114,7 @@ void ChangeMode::doAction(const std::vector<int> &input, VMState *vmstate, int m
         vmstate->getCommandBarState()->setCommandBar("");
         vmstate->getCommandBarState()->appendCommandBar(input.at(0));
         vmstate->getController()->setMode(Mode::COMMAND);
+        // note 2: since we don't flush the buffer, multiplier is preserved
         return; // NOTE: do not flush buffer here, we need to know / or ? to determine search direction
     }
     vmstate->getController()->flushBuffer();

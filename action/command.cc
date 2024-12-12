@@ -6,6 +6,7 @@
 
 Command::Command() {
     mode = Mode::COMMAND;
+    selfdefmultiply = true;
 }
 
 bool operator==(const std::vector<int> &input, std::string s) {
@@ -20,7 +21,7 @@ bool operator==(const std::vector<int> &input, std::string s) {
     return true;
 }
 
-void Command::doAction(const std::vector<int> &unfiltered, VMState *vmstate) {
+void Command::doAction(const std::vector<int> &unfiltered, VMState *vmstate, int multiplier) {
     std::vector<int> input = unfiltered;
     int toremove = 0;
     for(int i = input.size()-1; i >= 0; i--) {
@@ -163,7 +164,11 @@ void Command::doAction(const std::vector<int> &unfiltered, VMState *vmstate) {
 
             if(search != "") {
                 // call search action (in same direction as defined)
-                vmstate->getController()->setReplay("n");
+                std::string multed = "n";
+                if(multiplier > 1) {
+                    multed = std::to_string(multiplier) + multed;
+                }
+                vmstate->getController()->setReplay(multed);
             }
         }
         vmstate->getController()->flushBuffer();

@@ -5,7 +5,7 @@
 class Command : public Action {
     public:
     Command();
-    void doAction(const std::vector<int> &input, VMState *vmstate) override;
+    void doAction(const std::vector<int> &input, VMState *vmstate, int multiplier) override;
     bool matchAction(const std::vector<int> &input) override;
     ~Command() override;
 };
