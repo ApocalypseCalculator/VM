@@ -13,9 +13,9 @@ void VMEditHistory::undo(VMState* vmstate) {
     if(changes.empty()) {
         return;
     }
-    Change& last = changes.top();
+    Change last = changes.top();
     for(int i = last.changes.size()-1; i >= 0; i--) {
-        LineChange& linechange = last.changes[i];
+        LineChange linechange = last.changes[i];
         if(linechange.newdeleted) {
             vmstate->getFileState()->insertLine(linechange.lineidx, linechange.oldline);
             if(linechange.lineidx > cachecopy.size()) {
