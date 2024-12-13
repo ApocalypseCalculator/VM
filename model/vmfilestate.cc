@@ -191,7 +191,8 @@ void VMFileState::setForcedPageMove(int offset) {
 
 void VMFileState::insertLine(int line, std::string s) {
     if(line > content.size()) {
-        for(int i = 0; i < line - content.size(); i++) {
+        int target = line - content.size();
+        for(int i = 0; i < target; i++) {
             content.push_back("");
         }
     }

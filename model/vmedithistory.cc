@@ -13,27 +13,36 @@ void VMEditHistory::undo(VMState* vmstate) {
     if(changes.empty()) {
         return;
     }
-    Change last = changes.top();
+    Change& last = changes.top();
+
     for(int i = last.changes.size()-1; i >= 0; i--) {
-        LineChange linechange = last.changes[i];
+        LineChange& linechange = last.changes[i];
         if(linechange.newdeleted) {
-            vmstate->getFileState()->insertLine(linechange.lineidx, linechange.oldline);
-            if(linechange.lineidx > cachecopy.size()) {
-                for(int i = 0; i < linechange.lineidx - cachecopy.size(); i++) {
+            if(linechange.lineidx >= vmstate->getFileState()->getLineCount()) {
+                vmstate->getFileState()->insertLine(linechange.lineidx, "");
+            }
+            if(linechange.lineidx >= cachecopy.size()) {
+                int target = linechange.lineidx - cachecopy.size() + 1;
+                for(int i = 0; i < target; i++) {
                     cachecopy.push_back("");
                 }
             }
-            cachecopy.insert(cachecopy.begin() + linechange.lineidx, linechange.oldline);
+
+            vmstate->getFileState()->replaceLine(linechange.lineidx, linechange.oldline);
+            cachecopy[linechange.lineidx] = linechange.oldline;
+            vmstate->getFileState()->setCursor(Cursor(linechange.lineidx, 0));
         }
         else if(linechange.olddeleted) {
             vmstate->getFileState()->removeLine(linechange.lineidx);
             cachecopy.erase(cachecopy.begin() + linechange.lineidx);
+            // we assume line 0 doesnt get deleted (it shouldnt)
+            vmstate->getFileState()->setCursor(Cursor(linechange.lineidx-1, 0));
         }
         else {
             vmstate->getFileState()->replaceLine(linechange.lineidx, linechange.oldline);
             cachecopy[linechange.lineidx] = linechange.oldline;
+            vmstate->getFileState()->setCursor(Cursor(linechange.lineidx, 0));
         }
-        vmstate->getFileState()->setCursor(Cursor(linechange.lineidx, 0));
     }
     changes.pop();
     if(changes.empty()) {
