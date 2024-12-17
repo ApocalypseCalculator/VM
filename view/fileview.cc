@@ -55,7 +55,7 @@ void FileView::updateWindow() {
 }
 
 void FileView::displayView() {
-    wclear(win);
+    werase(win);
     box(win, 0, 0);
 
     if(file->getForcedPageMove() != 0) {

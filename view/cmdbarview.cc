@@ -17,7 +17,7 @@ CommandBarView::CommandBarView(CommandBarState *cmdbar) : cmdbar{cmdbar} {
     displayView();
 }
 void CommandBarView::displayView() {
-    wclear(win);
+    werase(win);
     box(win, 0, 0);
     wmove(win, 1, 1);
     if(cmdbar->getError().size() == 0) {
